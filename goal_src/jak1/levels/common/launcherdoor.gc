@@ -77,6 +77,7 @@
           (when (and *target* (< (-> self thresh-y) (-> *target* control trans y)))
             (let ((a1-3 (res-lump-struct (-> self entity) 'continue-name structure)))
               (when a1-3
+              ;;ignored for now
                 (let ((v1-36 (set-continue! *game-info* (the-as basic a1-3)))) (load-commands-set! *level* (-> v1-36 load-commands)))))
             (set! (-> self notify-player-passed-thru?) #t))
           (go launcherdoor-closed #f))
