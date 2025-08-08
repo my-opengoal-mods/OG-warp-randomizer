@@ -174,15 +174,22 @@
 )
 
 (defun set-values-in-checkpoint-list ()
-  (dotimes (i 69)
-    (when (do-we-still-have-poop-in-checkpoint-list2)
-      ;; shuffle contents of checkpoint-list into checkpoint-list2 and overwrite all poop
-      (when (string= (-> *checkpoint-list2* i) "poop")
-        (set! (-> *checkpoint-list2* i) (-> *checkpoint-list* (rand-vu-int-range 0 68)))
-      )
-    )
-  )
-)
+  (let ((shuffled (the-as (array string)
+                    (new 'static 'boxed-array :type string :length 69 :allocated-length 69))))
+    ;; Step 1: copy original values into shuffled array
+    (dotimes (i 69)
+      (set! (-> shuffled i) (-> *checkpoint-list* i)))
+
+    ;; Step 2: Fisher-Yates shuffle
+    (dotimes (i 69)
+      (let ((j (+ i (rand-vu-int-range 0 (- 69 i)))))
+        (let ((tmp (-> shuffled i)))
+          (set! (-> shuffled i) (-> shuffled j))
+          (set! (-> shuffled j) tmp))))
+
+    ;; Step 3: copy shuffled values to checkpoint-list2
+    (dotimes (i 69)
+      (set! (-> *checkpoint-list2* i) (-> shuffled i)))))
 
 (defun get-index-of-vanilla-point ((point-name string))
   (dotimes (i 69)
