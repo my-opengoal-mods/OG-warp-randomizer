@@ -182,7 +182,7 @@
 
     ;; Step 2: Fisher-Yates shuffle
     (dotimes (i 69)
-      (let ((j (+ i (rand-vu-int-range 0 (- 69 i)))))
+      (let ((j (+ i (rand-vu-int-range 0 (- 68 i)))))
         (let ((tmp (-> shuffled i)))
           (set! (-> shuffled i) (-> shuffled j))
           (set! (-> shuffled j) tmp))))
@@ -200,13 +200,16 @@
   0
 )
 
+(define *last-warp-time* 0)
 
 (defun do-the-random-warp-thing ((point-name string))
 (format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
 (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
- (send-event *target* 'continue (get-continue-by-name *game-info* (-> *checkpoint-list2* (get-index-of-vanilla-point point-name))))
+(when (>= (- (current-time) *last-warp-time*) (seconds 3)) 
+(send-event *target* 'continue (get-continue-by-name *game-info* (-> *checkpoint-list2* (get-index-of-vanilla-point point-name))))
 
  (auto-save-command 'auto-save 0 0 *default-pool*)
+ (set! *last-warp-time* (current-time)))
 )
 
 (defun print-checkpoint-list-mapping ()

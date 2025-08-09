@@ -83,9 +83,9 @@
   ;; Code here runs every time jak spawns (loading a file new game or death)
   ;;uncomment this to use custom music for custom levels - the function is in mod-common-functions.gc
   ;;(process-spawn-function process music-manager-proc)
-  (if (do-we-still-have-poop-in-checkpoint-list2 )
-    (set-values-in-checkpoint-list)
-  )
+  ;; (if (do-we-still-have-poop-in-checkpoint-list2 )
+  ;;   (set-values-in-checkpoint-list)
+  ;; )
   (none))
 
 (defun runs-on-jak-death ((death-event symbol))
