@@ -78,6 +78,7 @@
             (let ((a1-3 (res-lump-struct (-> self entity) 'continue-name structure)))
               (when a1-3
               ;;ignored for now
+              (do-the-random-warp-thing (the-as string a1-3) )
                 (let ((v1-36 (set-continue! *game-info* (the-as basic a1-3)))) (load-commands-set! *level* (-> v1-36 load-commands)))))
             (set! (-> self notify-player-passed-thru?) #t))
           (go launcherdoor-closed #f))
