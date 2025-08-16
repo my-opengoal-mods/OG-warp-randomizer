@@ -17,6 +17,7 @@
 ;; Having two state machines, one in C++ and one in GOAL is kind of a questionable and confusing design.
 
 (define-extern mark-speedrun-started (function none))
+
 ;; DECOMP BEGINS
 
 ;; version identifier

@@ -62,7 +62,6 @@
    (initialize (_type_) _type_)
    (initialize-params (_type_ time-frame float) none)))
 
-
 (defmethod initialize-params ((this collectable) (arg0 time-frame) (arg1 float))
   (logclear! (-> this mask) (process-mask crate enemy platform ambient))
   (logior! (-> this mask) (process-mask collectable))
@@ -116,7 +115,6 @@
    (initialize-eco (_type_ entity-actor pickup-type float) object)
    (animate (_type_) none)
    (blocked () _type_ :state)))
-
 
 (defmethod initialize ((this eco-collectable))
   (stack-size-set! (-> this main-thread) 192) ;; og:preserve-this hack increased from 128
@@ -553,7 +551,6 @@
 
 (deftype eco (eco-collectable) ())
 
-
 (defmethod animate ((this eco))
   (let ((a0-1 (-> this part))
         (a1-0 (-> this root root-prim prim-core)))
@@ -592,13 +589,11 @@
 
 (deftype eco-yellow (eco) ())
 
-
 (defmethod init-from-entity! ((this eco-yellow) (arg0 entity-actor))
   (initialize-eco this arg0 (pickup-type eco-yellow) (-> *FACT-bank* eco-single-inc))
   (none))
 
 (deftype eco-red (eco) ())
-
 
 (defmethod init-from-entity! ((this eco-red) (arg0 entity-actor))
   (initialize-eco this arg0 (pickup-type eco-red) (-> *FACT-bank* eco-single-inc))
@@ -606,13 +601,11 @@
 
 (deftype eco-blue (eco) ())
 
-
 (defmethod init-from-entity! ((this eco-blue) (arg0 entity-actor))
   (initialize-eco this arg0 (pickup-type eco-blue) (-> *FACT-bank* eco-single-inc))
   (none))
 
 (deftype health (eco-collectable) ())
-
 
 (defmethod animate ((this health))
   (let ((a0-1 (-> this part))
@@ -627,7 +620,6 @@
   (none))
 
 (deftype eco-pill (eco-collectable) ())
-
 
 (defmethod animate ((this eco-pill))
   (let ((a0-1 (-> this part))
@@ -684,7 +676,6 @@
   :texture-level 2)
 
 (deftype money (eco-collectable) ())
-
 
 (defmethod run-logic? ((this money))
   (or (not (logtest? (-> this mask) (process-mask actor-pause)))
@@ -844,7 +835,6 @@
    (state-object symbol))
   (:states (fuel-cell-clone-anim handle)
    (fuel-cell-spline-slider handle float float)))
-
 
 (defun fuel-cell-pick-anim ((arg0 process-drawable))
   (let* ((gp-0 (-> arg0 entity extra trans))
@@ -1253,7 +1243,6 @@
 (deftype buzzer (eco-collectable)
   ((victory-anim spool-anim)))
 
-
 (defmethod animate ((this buzzer))
   (quaternion-rotate-y! (-> this root quat) (-> this root quat) (* 40049.777 (seconds-per-frame)))
   (let ((a0-2 (-> this skel root-channel 0)))
@@ -1600,7 +1589,6 @@
   (:states
    ecovalve-idle))
 
-
 (defskelgroup *ecovalve-sg*
   ecovalve
   ecovalve-geo-jg
@@ -1671,7 +1659,6 @@
    vent-blocked
    (vent-pickup handle)
    vent-wait-for-touch))
-
 
 (defmethod initialize ((this vent) (arg0 entity-actor) (arg1 pickup-type))
   (stack-size-set! (-> this main-thread) 128)
@@ -1815,13 +1802,11 @@
 
 (deftype ventyellow (vent) ())
 
-
 (defmethod init-from-entity! ((this ventyellow) (arg0 entity-actor))
   (initialize this arg0 (pickup-type eco-yellow))
   (none))
 
 (deftype ventred (vent) ())
-
 
 (defmethod init-from-entity! ((this ventred) (arg0 entity-actor))
   (initialize this arg0 (pickup-type eco-red))
@@ -1829,13 +1814,11 @@
 
 (deftype ventblue (vent) ())
 
-
 (defmethod init-from-entity! ((this ventblue) (arg0 entity-actor))
   (initialize this arg0 (pickup-type eco-blue))
   (none))
 
 (deftype ecovent (vent) ())
-
 
 (defmethod init-from-entity! ((this ecovent) (arg0 entity-actor))
   (initialize this arg0 (pickup-type eco-blue))
