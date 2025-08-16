@@ -6,7 +6,7 @@
 (require "engine/level/load-boundary-h.gc")
 (require "engine/gfx/sky/sky-tng.gc")
 (require "engine/game/settings.gc")
-
+(define *no-warp?* #f)
 ;; DECOMP BEGINS
 
 (define *checkpoint-list*
@@ -167,22 +167,36 @@
 
 (defun have-we-set-up-the-warp-list? ()
   (dotimes (i 69)
-    (if (string= (-> *checkpoint-list2* i) "not-set") (return #f)))
+    (when (string= (-> *checkpoint-list2* i) "not-set") 
+    (when (= my-seed 69) (set! my-seed (knuth-rand-advance-seed))
+    (format 0 "WARP-RAND: SEED WAS 69 SETTING IT TO  ~D~%" my-seed)
+    )
+    (return #f)))
   #t)
 
-(defun set-values-in-checkpoint-list ()
+(defun-extern knuth-rand-init int int)
+(defun-extern knuth-rand-int-range int int int)
+(defun set-values-in-checkpoint-list ((seed int))
+  ;; Step 0: initialize RNG with given seed
+  (knuth-rand-init (the int64 seed))
+
   (let ((shuffled (the-as (array string) (new 'static 'boxed-array :type string :length 69 :allocated-length 69))))
     ;; Step 1: copy original values into shuffled array
     (dotimes (i 69)
       (set! (-> shuffled i) (-> *checkpoint-list* i)))
-    ;; Step 2: Fisher-Yates shuffle
+
+    ;; Step 2: Fisher-Yates shuffle using knuth-rand-int-range
     (dotimes (i 69)
-      (let ((j (+ i (rand-vu-int-range 0 (- 68 i)))))
-        (let ((tmp (-> shuffled i))) (set! (-> shuffled i) (-> shuffled j)) (set! (-> shuffled j) tmp))))
-    ;; Step 3: copy shuffled values to checkpoint-list2
+      (let ((j (+ i (knuth-rand-int-range 0 (- 68 i)))))
+        (let ((tmp (-> shuffled i)))
+          (set! (-> shuffled i) (-> shuffled j))
+          (set! (-> shuffled j) tmp))))
+
+    ;; Step 3: copy shuffled values into checkpoint-list2
     (dotimes (i 69)
-      (set! (-> *checkpoint-list2* i) (-> shuffled i))
-      (format 0 "WARP-RAND: Setting index ~D ~A to ~A~%" i (-> *checkpoint-list2* i) (-> *checkpoint-list* i)))))
+      (set! (-> *checkpoint-list2* i) (-> shuffled i))))
+  
+  (none))
 
 (defun get-index-of-vanilla-point ((point-name string))
   (dotimes (i 69)
@@ -191,10 +205,19 @@
 
 (define *last-warp-time* 0)
 
+(define my-seed 69)
 (defun do-the-random-warp-thing ((point-name string))
+
+(when *no-warp?*
+(set! *no-warp?* #f)
+(return (the time-frame #f))
+)
   (when (not (have-we-set-up-the-warp-list?))
     (format 0 "WARP-RAND: We still have poop in the checkpoint list, setting values~%")
-    (set-values-in-checkpoint-list))
+    (set-values-in-checkpoint-list my-seed)
+    ;;(set-values-in-checkpoint-list 75)
+    
+    )
   (format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
   (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
   (when (and (>= (- (current-time) *last-warp-time*) (seconds 3))
@@ -209,6 +232,13 @@
   (dotimes (i 69)
     (format 0 "WARP-RAND: ~D: ~A is mapped to ~A~%" i (-> *checkpoint-list* i) (-> *checkpoint-list2* i))))
 
+(defun reset-warp-randomizer ()
+"sets the warp randomizer back to a clean slate"
+(set! my-seed 69)
+(dotimes (i 69)
+      (set! (-> *checkpoint-list2* i) "not-set"))
+
+)
 ;; the editor state
 (deftype lb-editor-parms (basic)
   ((boundary load-boundary)

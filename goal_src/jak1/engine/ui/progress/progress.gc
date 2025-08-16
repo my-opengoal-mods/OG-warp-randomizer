@@ -642,6 +642,7 @@
                         (= v1-2 (progress-screen mouse-binds))
                         (= v1-2 (progress-screen controller-options))
                         (= v1-2 (progress-screen mouse-options))
+                        (= v1-2 (progress-screen checkpoint-list))
                         (= v1-2 (progress-screen reassign-binds-options)))))))))
 
 (defmethod visible? ((this progress))

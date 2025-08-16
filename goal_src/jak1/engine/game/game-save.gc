@@ -611,10 +611,13 @@
                     (&+ (the-as pointer save-data) (logand -16 (+ (* (the-as int (-> save-data elt-size)) (-> save-data elt-count)) 31)))))))
   ;; og:preserve-this make sure loading a save doesn't reset speedrun state
   (when (and (-> *pc-settings* speedrunner-mode?) (zero? (-> save new-game)))
-    (mark-speedrun-started))
+    (mark-speedrun-started)
+
+    )
   ;; if we're a new game, set our checkpoint.
   (when (nonzero? (-> save new-game))
     (set-continue! this "game-start")
+        
     (set! save save)
     (goto cfg-134))
   ;; loop over all tags

@@ -422,6 +422,7 @@
     ;; reset actors to ensure any above changes take effect
     (reset-actors 'life)
     ;; autosave any changes back to file
+   
     (auto-save-command 'auto-save 0 0 *default-pool*))
   (none))
 
