@@ -6,6 +6,11 @@
 #include <random>
 #include <thread>
 #include <list>
+#include "game/graphics/gfx.h"
+
+#include "game/tools/filter_menu/filter_menu.h" // For DebugTextFilter definition
+#include <iostream>
+
 
 #define MINIAUDIO_IMPLEMENTATION
 // NOTE - this is needed, because on macOS, there is a file called `MacTypes.h`
@@ -715,6 +720,28 @@ void pc_set_display_mode(u32 symptr, u64 window_width, u64 window_height) {
   }
 }
 
+u64 pc_get_rand_seed() {
+    // Default seed if no valid value is found
+    u64 seed = 0; 
+
+    for (const auto& filter : Gfx::g_debug_settings.text_filters) {
+        if (filter.type == DebugTextFilter::Type::CONTAINS) {
+            // Check if the content is not empty
+            if (!filter.content.empty()) {
+                try {
+                    // Use std::stoull to convert the string to an unsigned long long (u64)
+                    seed = std::stoull(filter.content);
+                } catch (const std::exception& e) {
+                    std::cerr << "Error converting filter content to u64: " << e.what() << std::endl;
+                    // Seed remains 0 on conversion error
+                }
+            }
+            // Exit the loop after finding the first one
+            break;
+        }
+    }
+    return seed;
+}
 u64 pc_get_display_count() {
   if (Display::GetMainDisplay()) {
     return Display::GetMainDisplay()->get_display_manager()->num_connected_displays();
@@ -1247,11 +1274,14 @@ void init_common_pc_port_functions(
   // -- DISPLAY RELATED --
   // Returns the name of the display with the given id or #f if not found / empty
   make_func_symbol_func("pc-get-display-id", (void*)pc_get_display_id);
+  
+
   make_func_symbol_func("pc-set-display-id!", (void*)pc_set_display_id);
   make_func_symbol_func("pc-get-display-name", (void*)pc_get_display_name);
   make_func_symbol_func("pc-get-display-mode", (void*)pc_get_display_mode);
   make_func_symbol_func("pc-set-display-mode!", (void*)pc_set_display_mode);
   make_func_symbol_func("pc-get-display-count", (void*)pc_get_display_count);
+  make_func_symbol_func("pc-get-rand-seed", (void*)pc_get_rand_seed);
   // Returns resolution of the monitor's current display mode
   make_func_symbol_func("pc-get-active-display-size", (void*)pc_get_active_display_size);
   // Returns the current refresh rate of the currently selected monitor's display mode.

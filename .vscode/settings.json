@@ -12,6 +12,7 @@
   "files.associations": {
     "optional": "cpp",
     "xhash": "cpp",
-    "vector": "cpp"
+    "vector": "cpp",
+    "iostream": "cpp"
   }
 }

@@ -78,7 +78,7 @@ typedef uint64_t uint64;
 // (READ/NOTIFICATIONS)
 #define VALVE_INPUT_CHAR	@"100F6C33-1735-4313-B402-38567131E5F3"
 
-//  (READ/WRITE)
+//  (READ/WRITE)
 #define VALVE_REPORT_CHAR	@"100F6C34-1735-4313-B402-38567131E5F3"
 
 // TODO: create CBUUID's in __attribute__((constructor)) rather than doing [CBUUID UUIDWithString:...] everywhere

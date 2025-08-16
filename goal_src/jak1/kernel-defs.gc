@@ -521,6 +521,7 @@
 (define-extern pc-get-active-display-refresh-rate (function int))
 
 (define-extern pc-get-display-count (function int))
+(define-extern pc-get-rand-seed (function int))
 
 (define-extern pc-get-display-name (function int string symbol))
 

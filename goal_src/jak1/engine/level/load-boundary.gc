@@ -210,7 +210,10 @@
 )
   (when (not (have-we-set-up-the-warp-list?))
     (format 0 "WARP-RAND: We still have poop in the checkpoint list, setting values~%")
-    (set-values-in-checkpoint-list my-seed)
+    
+    (if (= pc-get-rand-seed 0) (set-values-in-checkpoint-list my-seed)
+    (set-values-in-checkpoint-list (pc-get-rand-seed))
+    )
     ;;(set-values-in-checkpoint-list 75)
     
     )

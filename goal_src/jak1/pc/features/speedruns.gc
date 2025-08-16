@@ -189,6 +189,7 @@
   (none))
 
 (defun start-speedrun ((category speedrun-category))
+(reset-warp-randomizer)
    (set! *no-warp?* #t)
   ;; disable hints (turned back on later for all-cutscenes category)
   (false! (-> *setting-control* default play-hints))

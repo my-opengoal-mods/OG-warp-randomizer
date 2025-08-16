@@ -124,7 +124,7 @@ void OpenGlDebugGui::draw(const DmaStats& dma_stats) {
         ImGui::EndMenu();
       }
       ImGui::MenuItem("Subtitle Editor", nullptr, &m_subtitle_editor);
-      ImGui::MenuItem("Debug Text Filter", nullptr, &m_filters_menu);
+      ImGui::MenuItem("Warp randomizer seed", nullptr, &m_filters_menu);
       ImGui::EndMenu();
     }
 
