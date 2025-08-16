@@ -314,9 +314,9 @@
   :code
     (behavior ((arg0 int) (arg1 level))
       (set-time! (-> self state-time))
-      (when (not arg1)
         (process-release? *target*)
-        (go-virtual idle))
+        (do-the-random-warp-thing (the string (-> *warp-info* arg0)))
+        (go-virtual idle)
       (let ((s4-0 (new 'stack-no-clear 'event-message-block)))
         (set! (-> s4-0 from) self)
         (set! (-> s4-0 num-params) 3)

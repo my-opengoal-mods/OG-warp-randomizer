@@ -1279,7 +1279,7 @@
 
 (defun build-checkpoint-list-options ()
   (set! (-> *temp-options* length) 0)
-  (dotimes (idx 69)
+  (dotimes (idx 66)
    
     (add-checkpoint-list-option idx))
   (add-back-option))
@@ -2894,7 +2894,7 @@
               (sound-play "starts-options")
               (sound-volume-off)
               (set! (-> *game-info* mode) 'play)
-              (if (= (-> *pc-settings* speedrunner-mode?) #t)
+              (when (= (-> *pc-settings* speedrunner-mode?) #t)
                 ;; Start a new game differently if speedrunning mode is active
                 (speedrun-start-full-game-run)
                 ;; start the game normally

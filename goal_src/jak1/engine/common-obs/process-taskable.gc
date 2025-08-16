@@ -263,6 +263,7 @@
        (while (not (send-event *target* 'clone-anim self))
          (spool-push *art-control* (-> (the-as spool-anim arg1) name) 0 self -99.0)
          (format #t "WARNING: ~A stall on not cloning.~%" (-> self name))
+         (return #f)
          (suspend))
        (send-event (ppointer->process (-> *target* sidekick)) 'matrix 'play-anim)
        (send-event *target* 'blend-shape #t))
