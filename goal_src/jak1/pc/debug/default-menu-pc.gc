@@ -508,7 +508,10 @@
                                                                                ,(lambda ()
                                                                                  (set-aspect! *pc-settings* (-> *pc-settings* aspect-custom-x) (-> *pc-settings* aspect-custom-y)))))
                                                                (menu "Fullscreen"
-                                                                     (function "Windowed" #f ,(lambda () (pc-set-display-mode! 'windowed (-> *pc-settings* window-width) (-> *pc-settings* window-height))))
+                                                                     (function "Windowed"
+                                                                               #f
+                                                                               ,(lambda ()
+                                                                                 (pc-set-display-mode! 'windowed (-> *pc-settings* window-width) (-> *pc-settings* window-height))))
                                                                      (function "Fullscreen" #f ,(lambda () (pc-set-display-mode! 'fullscreen 0 0)))
                                                                      (function "Borderless" #f ,(lambda () (pc-set-display-mode! 'borderless 0 0))))
                                                                (menu "Sizes"

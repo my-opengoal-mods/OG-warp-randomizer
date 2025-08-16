@@ -115,13 +115,13 @@
        'boxed-array
        :type
        game-option
-      ;;  ;; un-comment this section to add save+load option
-      ;;  (new 'static
-      ;;       'game-option
-      ;;       :option-type (game-option-type menu)
-      ;;       :name (text-id save-and-load-game)
-      ;;       :scale #t
-      ;;       :param3 (game-option-menu save-and-load-game))
+       ;;  ;; un-comment this section to add save+load option
+       ;;  (new 'static
+       ;;       'game-option
+       ;;       :option-type (game-option-type menu)
+       ;;       :name (text-id save-and-load-game)
+       ;;       :scale #t
+       ;;       :param3 (game-option-menu save-and-load-game))
        (new 'static
             'game-option
             :option-type (game-option-type menu)
@@ -171,13 +171,13 @@
        'boxed-array
        :type
        game-option
-      ;;  ;; un-comment this section to add save+load option
-      ;;  (new 'static
-      ;;       'game-option
-      ;;       :option-type (game-option-type menu)
-      ;;       :name (text-id save-and-load-game)
-      ;;       :scale #t
-      ;;       :param3 (game-option-menu save-and-load-game))
+       ;;  ;; un-comment this section to add save+load option
+       ;;  (new 'static
+       ;;       'game-option
+       ;;       :option-type (game-option-type menu)
+       ;;       :name (text-id save-and-load-game)
+       ;;       :scale #t
+       ;;       :param3 (game-option-menu save-and-load-game))
        (new 'static
             'game-option
             :option-type (game-option-type menu)
@@ -2329,7 +2329,8 @@
                 (when sound?
                   ;; if the option has an explicit on-change function, call it
                   (when (nonzero? (-> options (-> obj option-index) on-change))
-                    ((-> options (-> obj option-index) on-change) (-> (the-as (pointer float) (-> options (-> obj option-index) value-to-modify)))))
+                    ((-> options (-> obj option-index) on-change)
+                     (-> (the-as (pointer float) (-> options (-> obj option-index) value-to-modify)))))
                   (let ((vol 100.0))
                     (case (-> options (-> obj option-index) name)
                       (((text-id music-volume) (text-id speech-volume))
@@ -2411,7 +2412,8 @@
                 (when sound?
                   ;; if the option has an explicit on-change function, call it
                   (when (nonzero? (-> options (-> obj option-index) on-change))
-                    ((-> options (-> obj option-index) on-change) (-> (the-as (pointer float) (-> options (-> obj option-index) value-to-modify)))))
+                    ((-> options (-> obj option-index) on-change)
+                     (-> (the-as (pointer float) (-> options (-> obj option-index) value-to-modify)))))
                   (let ((vol 100.0))
                     (case (-> options (-> obj option-index) name)
                       (((text-id music-volume) (text-id speech-volume))
@@ -2476,7 +2478,10 @@
                   (sound-play "select-option")
                   (set! (-> obj next-display-state) (the-as progress-screen (-> options (-> obj option-index) param3)))
                   (case (-> obj next-display-state)
-                    (((progress-screen load-game) (progress-screen save-game) (progress-screen save-and-load-game) (progress-screen save-game-title))
+                    (((progress-screen load-game)
+                      (progress-screen save-game)
+                      (progress-screen save-and-load-game)
+                      (progress-screen save-game-title))
                      (set! (-> obj next-display-state) (set-memcard-screen obj (-> obj next-display-state))))))))
               ((= (-> options (-> obj option-index) option-type) (game-option-type button))
                ;; a button. what?
@@ -2878,9 +2883,7 @@
              ((-> *progress-state* yes-no-choice)
               (sound-play "start-options")
               (set! (-> obj next-display-state) (progress-screen memcard-saving-and-loading)))
-             (else
-              (sound-play "cursor-options")
-              (set! (-> obj next-display-state) (progress-screen save-and-load-game)))))
+             (else (sound-play "cursor-options") (set! (-> obj next-display-state) (progress-screen save-and-load-game)))))
           (((progress-screen memcard-no-data))
            (cond
              ((-> *progress-state* yes-no-choice)
@@ -3133,7 +3136,11 @@
                      ;; this ugliness is just decompiler stuff. all it does is fade the alpha according to value.
                      (let* ((v1-82 (the-as uint #x8000ffff))
                             ;; calculate the percentage of the bar based on the actual range, instead of assuming 0-100
-                            (percentage (lerp-scale 0.0 1.0 (-> (the-as (pointer float) (-> options index value-to-modify))) (-> options index param1) (-> options index param2)))
+                            (percentage (lerp-scale 0.0
+                                                    1.0
+                                                    (-> (the-as (pointer float) (-> options index value-to-modify)))
+                                                    (-> options index param1)
+                                                    (-> options index param2)))
                             (a0-34 (logior (logand v1-82 -256) (shr (shl (the int (+ 64.0 (* 191.0 percentage))) 56) 56)))
                             (color (logior (logand a0-34 -65281) (shr (shl (shr (shl a0-34 56) 56) 56) 48))))
                        (draw-percent-bar (- 75 (-> obj left-x-offset)) (+ y-off 8) percentage (the-as rgba color))
@@ -3437,7 +3444,8 @@
         (((progress-screen memcard-format)) (draw-memcard-format obj a1-1))
         (((progress-screen memcard-no-space) (progress-screen memcard-not-inserted) (progress-screen memcard-not-formatted))
          (draw-memcard-storage-error obj a1-1))
-        (((progress-screen memcard-data-exists) (progress-screen memcard-data-exists-save-and-load)) (draw-memcard-data-exists obj a1-1))
+        (((progress-screen memcard-data-exists) (progress-screen memcard-data-exists-save-and-load))
+         (draw-memcard-data-exists obj a1-1))
         (((progress-screen memcard-no-data)) (draw-memcard-no-data obj a1-1))
         (((progress-screen memcard-loading)
           (progress-screen memcard-saving)
@@ -3446,7 +3454,10 @@
           (progress-screen memcard-creating))
          (draw-memcard-accessing obj a1-1))
         (((progress-screen memcard-insert)) (draw-memcard-insert obj a1-1))
-        (((progress-screen load-game) (progress-screen save-game) (progress-screen save-and-load-game) (progress-screen save-game-title))
+        (((progress-screen load-game)
+          (progress-screen save-game)
+          (progress-screen save-and-load-game)
+          (progress-screen save-game-title))
          (draw-memcard-file-select obj a1-1))
         (((progress-screen memcard-auto-save-error)) (draw-memcard-auto-save-error obj a1-1))
         (((progress-screen memcard-removed)) (draw-memcard-removed obj a1-1))
@@ -3540,8 +3551,7 @@
               (progress-screen auto-save)
               (progress-screen load-game)
               (progress-screen save-game)
-              (progress-screen save-and-load-game)
-              )
+              (progress-screen save-and-load-game))
              (draw-notice-screen self)
              (draw-options self 190 0 0.82))
             (((progress-screen no-disc) (progress-screen bad-disc))
@@ -3551,7 +3561,9 @@
              (draw-notice-screen self)
              (draw-options self 110 0 0.82))
             (((progress-screen memcard-insert)) (draw-notice-screen self) (draw-options self 165 0 0.82))
-            (((progress-screen memcard-data-exists) (progress-screen memcard-data-exists-save-and-load)) (draw-notice-screen self) (draw-options self 168 0 0.82))
+            (((progress-screen memcard-data-exists) (progress-screen memcard-data-exists-save-and-load))
+             (draw-notice-screen self)
+             (draw-options self 168 0 0.82))
             (((progress-screen memcard-loading)
               (progress-screen memcard-saving)
               (progress-screen memcard-saving-and-loading)
@@ -3598,7 +3610,10 @@
         (set! (-> self particles 32 init-pos x) -320.0)
         (set! (-> self particles 33 init-pos x) -320.0)
         (case (-> self display-state)
-          (((progress-screen load-game) (progress-screen save-game) (progress-screen save-and-load-game) (progress-screen save-game-title))
+          (((progress-screen load-game)
+            (progress-screen save-game)
+            (progress-screen save-and-load-game)
+            (progress-screen save-game-title))
            (set! (-> self transition-speed) 30.0)))
         (none)))
 

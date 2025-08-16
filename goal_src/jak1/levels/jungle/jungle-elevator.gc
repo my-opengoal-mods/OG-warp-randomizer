@@ -10,7 +10,6 @@
    (teleport-if-below-y float)
    (teleport-if-above-y float)))
 
-
 (defmethod can-activate? ((this jungle-elevator))
   (and ((method-of-type plat-button can-activate?) this) (task-complete? *game-info* (game-task jungle-tower))))
 
@@ -68,8 +67,8 @@
          (set! (-> self draw light-index) (the-as uint 1))
          (let ((a1-1 (res-lump-struct (-> self entity) 'continue-name structure)))
            (when a1-1
-           ;;ignored for now
-           (do-the-random-warp-thing (the-as string a1-1) )
+             ;;ignored for now
+             (do-the-random-warp-thing (the-as string a1-1))
              (let ((v1-4 (set-continue! *game-info* (the-as basic a1-1)))) (load-commands-set! *level* (-> v1-4 load-commands))))))
         (else (set! (-> self draw light-index) (the-as uint 255)) (load-commands-set! *level* '())))
       (let ((t9-4 (-> (method-of-type plat-button plat-button-at-end) code)))

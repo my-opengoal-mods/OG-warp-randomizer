@@ -11,7 +11,6 @@
 
 (deftype warpgate (process-hidden) ())
 
-
 (defstate target-warp-in (target)
   :event target-generic-event-handler
   :enter
@@ -271,7 +270,6 @@
   (:methods
    (pressable? (_type_) symbol)))
 
-
 (defskelgroup *warp-gate-switch-sg*
   warp-gate-switch
   warp-gate-switch-lod0-jg
@@ -316,9 +314,7 @@
                (task-complete? *game-info* (game-task training-gimmie))
                (task-complete? *game-info* (game-task training-climb))
                (task-complete? *game-info* (game-task training-buzzer)))
-                (if (not (have-we-set-up-the-warp-list? ))
-    (set-values-in-checkpoint-list)
-  )
+          (if (not (have-we-set-up-the-warp-list?)) (set-values-in-checkpoint-list))
           #t)
          (else
           (level-hint-spawn (text-id training-warp-gate-blocked) "sagevb38" (the-as entity #f) *entity-pool* (game-task none))
@@ -488,7 +484,6 @@
    (state-time    time-frame))
   (:state-methods
    idle))
-
 
 (defmethod relocate ((this village-cam) (offset int))
   (if (nonzero? (-> this root-override)) (&+! (-> this root-override) offset))

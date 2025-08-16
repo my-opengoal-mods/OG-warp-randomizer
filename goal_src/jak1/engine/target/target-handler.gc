@@ -627,15 +627,16 @@ target-standard-event-handler
   (set! (-> self control unknown-vector11 quad) (the-as uint128 0))
   (set! (-> self control unknown-float41) 0.0)
   (set! (-> self control unknown-float81) 0.0)
-(when *target*  (logclear! (-> self state-flags)
-             (state-flags sf02
-                          being-attacked
-                          do-not-notice
-                          grabbed
-                          first-person-mode
-                          looking-at-enemy
-                          falling-into-pool-of-bad
-                          flop-hit-ground)))
+  (when *target*
+    (logclear! (-> self state-flags)
+               (state-flags sf02
+                            being-attacked
+                            do-not-notice
+                            grabbed
+                            first-person-mode
+                            looking-at-enemy
+                            falling-into-pool-of-bad
+                            flop-hit-ground)))
   (target-danger-set! 'harmless #f)
   (logior! (-> self water flags) (water-flags wt04))
   (logclear! (-> self water flags) (water-flags wt16))
