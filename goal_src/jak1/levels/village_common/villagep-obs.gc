@@ -316,7 +316,7 @@
                (task-complete? *game-info* (game-task training-gimmie))
                (task-complete? *game-info* (game-task training-climb))
                (task-complete? *game-info* (game-task training-buzzer)))
-                (if (do-we-still-have-poop-in-checkpoint-list2 )
+                (if (not (have-we-set-up-the-warp-list? ))
     (set-values-in-checkpoint-list)
   )
           #t)
