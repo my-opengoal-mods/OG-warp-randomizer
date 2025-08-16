@@ -164,7 +164,10 @@
                "not-set"
                "not-set"
                "not-set")))
-
+(define my-seed 69)
+(defun-extern knuth-rand-init int int)
+(defun-extern knuth-rand-int-range int int int)
+(defun-extern knuth-rand-advance-seed int)
 (defun have-we-set-up-the-warp-list? ()
   (dotimes (i 69)
     (when (string= (-> *checkpoint-list2* i) "not-set") 
@@ -174,8 +177,7 @@
     (return #f)))
   #t)
 
-(defun-extern knuth-rand-init int int)
-(defun-extern knuth-rand-int-range int int int)
+
 (defun set-values-in-checkpoint-list ((seed int))
   ;; Step 0: initialize RNG with given seed
   (knuth-rand-init (the int64 seed))
@@ -205,7 +207,7 @@
 
 (define *last-warp-time* 0)
 
-(define my-seed 69)
+
 (defun do-the-random-warp-thing ((point-name string))
 
 (when *no-warp?*

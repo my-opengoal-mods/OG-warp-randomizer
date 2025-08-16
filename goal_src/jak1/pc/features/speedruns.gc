@@ -189,6 +189,7 @@
   (none))
 
 (defun start-speedrun ((category speedrun-category))
+   (set! *no-warp?* #t)
   ;; disable hints (turned back on later for all-cutscenes category)
   (false! (-> *setting-control* default play-hints))
   ;; turn on speedrun verification display and flip flag for setting up speedrun after initialize!

@@ -59,6 +59,7 @@
 
 (defun progress-fast-save-and-start-speedrun ((category speedrun-category))
   "saves to first slot, updates last-slot-saved for cursor, then starts speedrun"
+   
   (set! (-> *progress-state* last-slot-saved) 0)
   (auto-save-command 'save 0 0 *default-pool*)
   (start-speedrun category))
@@ -2898,7 +2899,8 @@
                 (speedrun-start-full-game-run)
                 ;; start the game normally
                 (initialize! *game-info* 'game (the-as game-save #f) "intro-start"))
-              (set-master-mode 'game))
+              (set-master-mode 'game)
+                 )
              (else (sound-play "cursor-options") (set! (-> obj next-display-state) (progress-screen invalid)))))
           (((progress-screen memcard-insert))
            (sound-play "cursor-options")
