@@ -171,19 +171,22 @@
     (return #f)))
   #t)
 
-
 (defun set-values-in-checkpoint-list ((seed int))
   ;; Step 0: initialize RNG with given seed
   (knuth-rand-init (the int64 seed))
 
-  (let ((shuffled (the-as (array string) (new 'static 'boxed-array :type string :length 66 :allocated-length 66))))
+  (let ((shuffled (the-as (array string)
+                          (new 'static 'boxed-array
+                               :type string
+                               :length 66
+                               :allocated-length 66))))
     ;; Step 1: copy original values into shuffled array
     (dotimes (i 66)
       (set! (-> shuffled i) (-> *checkpoint-list* i)))
 
     ;; Step 2: Fisher-Yates shuffle using knuth-rand-int-range
     (dotimes (i 66)
-      (let ((j (+ i (knuth-rand-int-range 0 (- 68 i)))))
+      (let ((j (+ i (knuth-rand-int-range 0 (- 66 i)))))
         (let ((tmp (-> shuffled i)))
           (set! (-> shuffled i) (-> shuffled j))
           (set! (-> shuffled j) tmp))))
@@ -191,8 +194,14 @@
     ;; Step 3: copy shuffled values into checkpoint-list2
     (dotimes (i 66)
       (set! (-> *checkpoint-list2* i) (-> shuffled i))))
-  
-  (none))
+
+  ;; Step 4: validation check for invalid "0" values
+  (dotimes (i 66)
+    (when (string= (-> *checkpoint-list2* i) "0")
+      (format 0 "Error: 0 found on seed ~D at index ~D~%" seed i)))
+      
+      (none))
+
 
 (defun get-index-of-vanilla-point ((point-name string))
   (dotimes (i 66)
