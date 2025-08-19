@@ -467,7 +467,7 @@
   ;; start a full game speedrun, save file is already selected so don't default to first slot
   (start-speedrun (speedrun-category full-game))
   (none))
-(define *last-seed-used-for-generation* 0)
+
 (defun speedrun-draw-settings ()
   "Draw speedrun related settings in the bottom left corner"
   (when (and (-> *pc-settings* speedrunner-mode?) (not (paused?)))

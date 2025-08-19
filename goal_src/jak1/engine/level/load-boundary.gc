@@ -8,7 +8,7 @@
 (require "engine/game/settings.gc")
 (define *no-warp?* #f)
 ;; DECOMP BEGINS
-
+(define *last-seed-used-for-generation* 0)
 (defconstant LIST_LENGTH 65)
 (define *checkpoint-list*
   (the-as (array string)
