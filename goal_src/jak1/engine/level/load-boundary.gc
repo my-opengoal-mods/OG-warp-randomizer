@@ -9,7 +9,7 @@
 (define *no-warp?* #f)
 ;; DECOMP BEGINS
 (define *last-seed-used-for-generation* 0)
-(defconstant LIST_LENGTH 65)
+(defconstant LIST_LENGTH 64)
 (define *checkpoint-list*
   (the-as (array string)
           (new 'static
@@ -55,7 +55,7 @@
                "village3-warp"
                "village3-farside"
                "snow-start"
-               "snow-fort"
+               ;;"snow-fort"
                "snow-flut-flut"
                "snow-pass-to-fort"
                "snow-by-ice-lake"
@@ -96,7 +96,7 @@
                "not-set"
                "not-set"
                ;;"not-set"
-               "not-set"
+               ;;"not-set"
                "not-set"
                "not-set"
                "not-set"
