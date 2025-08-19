@@ -59,7 +59,7 @@
 
 (defun progress-fast-save-and-start-speedrun ((category speedrun-category))
   "saves to first slot, updates last-slot-saved for cursor, then starts speedrun"
-   
+
   (set! (-> *progress-state* last-slot-saved) 0)
   (auto-save-command 'save 0 0 *default-pool*)
   (start-speedrun category))
@@ -1279,8 +1279,8 @@
 
 (defun build-checkpoint-list-options ()
   (set! (-> *temp-options* length) 0)
-  (dotimes (idx 66)
-   
+  (dotimes (idx LIST_LENGTH)
+
     (add-checkpoint-list-option idx))
   (add-back-option))
 
@@ -3136,7 +3136,7 @@
                                         (set! (-> options index name-override) "")
                                         (set-scale! font 0.00001)
                 (set! option-str (string-format "~D. ~S GOES TO ~S" (the int (-> options index param1)) (string-upcase (-> *checkpoint-list* (the int (-> options index param1))) (clear *pc-temp-string-1*)) (string-upcase (-> *checkpoint-list2* (the int (-> options index param1))) (clear *file-temp-string*))))
-                
+
                 ;;(set! option-str (string-format "~S IS MAPPED TO ~S"  (string-upcase (-> *checkpoint-list* (the int (-> options index param1))) (clear *pc-temp-string-1*)) (string-upcase (-> *checkpoint-list2* (the int (-> options index param1))) (clear *file-temp-string*))))
                 )
               (((game-option-type monitor))

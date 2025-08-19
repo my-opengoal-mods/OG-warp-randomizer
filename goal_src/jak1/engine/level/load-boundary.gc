@@ -9,14 +9,15 @@
 (define *no-warp?* #f)
 ;; DECOMP BEGINS
 
+(defconstant LIST_LENGTH 65)
 (define *checkpoint-list*
   (the-as (array string)
           (new 'static
                'boxed-array
                :type
                string
-               :length 66
-               :allocated-length 66
+               :length LIST_LENGTH
+               :allocated-length LIST_LENGTH
                "training-warp"
                "village1-hut"
                "village1-warp"
@@ -59,7 +60,7 @@
                "snow-pass-to-fort"
                "snow-by-ice-lake"
                "snow-by-ice-lake-alt"
-               "snow-outside-fort"
+               ;;"snow-outside-fort"
                "snow-outside-cave"
                "snow-across-from-flut"
                "maincave-start"
@@ -90,11 +91,11 @@
                'boxed-array
                :type
                string
-               :length 66
-               :allocated-length 66
+               :length LIST_LENGTH
+               :allocated-length LIST_LENGTH
                "not-set"
                "not-set"
-               "not-set"
+               ;;"not-set"
                "not-set"
                "not-set"
                "not-set"
@@ -163,8 +164,8 @@
 (defun-extern knuth-rand-int-range int int int)
 (defun-extern knuth-rand-advance-seed int)
 (defun have-we-set-up-the-warp-list? ()
-  (dotimes (i 66)
-    (when (string= (-> *checkpoint-list2* i) "not-set") 
+  (dotimes (i LIST_LENGTH)
+    (when (string= (-> *checkpoint-list2* i) "not-set")
     (when (= my-seed 69) (set! my-seed (knuth-rand-advance-seed))
     (format 0 "WARP-RAND: SEED WAS 69 SETTING IT TO  ~D~%" my-seed)
     )
@@ -178,8 +179,8 @@
   (let ((shuffled (the-as (array string)
                    (new 'static 'boxed-array
                         :type string
-                        :length 66
-                        :allocated-length 66)))
+                        :length LIST_LENGTH
+                        :allocated-length LIST_LENGTH)))
         (restricted (the-as (array string)
                       (new 'static 'boxed-array
                            :type string
@@ -190,16 +191,16 @@
                            "sunken-start"))))
 
     ;; Step 1: copy original values into shuffled array
-    (dotimes (i 66)
+    (dotimes (i LIST_LENGTH)
       (set! (-> shuffled i) (-> *checkpoint-list* i)))
 
     ;; Step 2: Fisher-Yates shuffle with restricted re-roll
-    (dotimes (i 66)
+    (dotimes (i LIST_LENGTH)
       (let ((j i)
             (valid #f))
         ;; keep rolling j until it’s valid
         (while (not valid)
-          (set! j (+ i (knuth-rand-int-range 0 (- 66 i))))
+          (set! j (+ i (knuth-rand-int-range 0 (- LIST_LENGTH i))))
           (let ((i-restricted #f)
                 (j-restricted #f))
             (dotimes (k 3)
@@ -217,18 +218,18 @@
           (set! (-> shuffled j) tmp))))
 
     ;; Step 3: copy shuffled values into checkpoint-list2
-    (dotimes (i 66)
+    (dotimes (i LIST_LENGTH)
       (set! (-> *checkpoint-list2* i) (-> shuffled i)))
 
     ;; Step 4: validation check for "0"
-    (dotimes (i 66)
+    (dotimes (i LIST_LENGTH)
       (when (string= (-> *checkpoint-list2* i) "0")
         (format 0 "Error: 0 found on seed ~D at index ~D~%" seed i)))
-
+ (set! *last-seed-used-for-generation* seed)
     (none)))
 
 (defun get-index-of-vanilla-point ((point-name string))
-  (dotimes (i 66)
+  (dotimes (i LIST_LENGTH)
     (if (string= point-name (-> *checkpoint-list* i)) (return i)))
   300)
 
@@ -243,17 +244,17 @@
 )
   (when (not (have-we-set-up-the-warp-list?))
     (format 0 "WARP-RAND: We still have poop in the checkpoint list, setting values~%")
-    
-    (if (= (pc-get-rand-seed) 0) 
+
+    (if (= (pc-get-rand-seed) 0)
     (set-values-in-checkpoint-list my-seed)
     (set-values-in-checkpoint-list (pc-get-rand-seed))
     )
     ;;(set-values-in-checkpoint-list 75)
-    
+
     )
   (format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
   (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
-  (when (and (>= (- (current-time) *last-warp-time*) (seconds 0.5))
+  (when (and (>= (- (current-time) *last-warp-time*) (seconds 3.5))
             (!= (get-index-of-vanilla-point point-name) 300)
              (not (string= (-> *game-info* current-continue name) point-name)))
     (send-event *target*
@@ -263,13 +264,13 @@
     (set! *last-warp-time* (current-time))))
 
 (defun print-checkpoint-list-mapping ()
-  (dotimes (i 66)
+  (dotimes (i LIST_LENGTH)
     (format 0 "WARP-RAND: ~D: ~A is mapped to ~A~%" i (-> *checkpoint-list* i) (-> *checkpoint-list2* i))))
 
 (defun reset-warp-randomizer ()
 "sets the warp randomizer back to a clean slate"
 (set! my-seed 69)
-(dotimes (i 66)
+(dotimes (i LIST_LENGTH)
       (set! (-> *checkpoint-list2* i) "not-set"))
 (have-we-set-up-the-warp-list?)
 )

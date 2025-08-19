@@ -424,7 +424,7 @@
     ;; reset actors to ensure any above changes take effect
     (reset-actors 'life)
     ;; autosave any changes back to file
-   
+
     (auto-save-command 'auto-save 0 0 *default-pool*))
   (none))
 
@@ -467,19 +467,31 @@
   ;; start a full game speedrun, save file is already selected so don't default to first slot
   (start-speedrun (speedrun-category full-game))
   (none))
-
+(define *last-seed-used-for-generation* 0)
 (defun speedrun-draw-settings ()
   "Draw speedrun related settings in the bottom left corner"
-  (when (and (-> *pc-settings* speedrunner-mode?) (not (paused?)) (-> *speedrun-info* should-display?))
+  (when (and (-> *pc-settings* speedrunner-mode?) (not (paused?)))
     (with-dma-buffer-add-bucket ((buf (-> (current-frame) global-buf)) (bucket-id subtitle))
-      (draw-string-xy (string-format "Speedrunner Mode ~%Mod Version: ~S ~%Category: ~S ~S~%Run Started: ~S"
+      ;; (draw-string-xy (string-format "Speedrunner Mode ~%Mod Version: ~S ~%Category: ~S ~S~%Run Started: ~S~%LAST SEED USED FOR GENERATION: ~D"
+      ;;                                *mod-version-text*
+      ;;                                (enum->string speedrun-category (-> *speedrun-info* category))
+      ;;                                (if (-> *pc-settings* skip-movies?) "(CS Skips)" "(No CS Skips)")
+      ;;                                (if (-> *speedrun-info* has-started?) "Yes" "No")
+      ;;                                *last-seed-used-for-generation*)
+      ;;                 buf
+      ;;                 5
+      ;;                 (- 222 (* 8 5))
+      ;;                 (font-color flat-yellow)
+      ;;                 (font-flags shadow kerning))
+
+                      (draw-string-xy (string-format "Warp randomizer ~%Mod Version: ~S ~%LAST SEED USED FOR GENERATION: ~D"
                                      *mod-version-text*
-                                     (enum->string speedrun-category (-> *speedrun-info* category))
-                                     (if (-> *pc-settings* skip-movies?) "(CS Skips)" "(No CS Skips)")
-                                     (if (-> *speedrun-info* has-started?) "Yes" "No"))
+
+                                     *last-seed-used-for-generation*)
                       buf
-                      4
-                      (- 222 (* 8 4))
+                      3
+                      (- 222 (* 8 3))
                       (font-color flat-yellow)
-                      (font-flags shadow kerning))))
+                      (font-flags shadow kerning))
+                      ))
   (none))
