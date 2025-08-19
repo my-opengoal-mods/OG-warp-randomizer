@@ -3135,7 +3135,7 @@
                                         (((game-option-type checkpoint-list))
                                         (set! (-> options index name-override) "")
                                         (set-scale! font 0.00001)
-                (set! option-str (string-format "~D. ~S IS MAPPED TO ~S" (the int (-> options index param1)) (string-upcase (-> *checkpoint-list* (the int (-> options index param1))) (clear *pc-temp-string-1*)) (string-upcase (-> *checkpoint-list2* (the int (-> options index param1))) (clear *file-temp-string*))))
+                (set! option-str (string-format "~D. ~S GOES TO ~S" (the int (-> options index param1)) (string-upcase (-> *checkpoint-list* (the int (-> options index param1))) (clear *pc-temp-string-1*)) (string-upcase (-> *checkpoint-list2* (the int (-> options index param1))) (clear *file-temp-string*))))
                 
                 ;;(set! option-str (string-format "~S IS MAPPED TO ~S"  (string-upcase (-> *checkpoint-list* (the int (-> options index param1))) (clear *pc-temp-string-1*)) (string-upcase (-> *checkpoint-list2* (the int (-> options index param1))) (clear *file-temp-string*))))
                 )
