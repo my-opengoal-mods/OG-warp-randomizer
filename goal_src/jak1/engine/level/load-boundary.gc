@@ -9,7 +9,7 @@
 (define *no-warp?* #f)
 ;; DECOMP BEGINS
 (define *last-seed-used-for-generation* 0)
-(defconstant LIST_LENGTH 64)
+(defconstant LIST_LENGTH 66)
 (define *checkpoint-list*
   (the-as (array string)
           (new 'static
@@ -55,12 +55,12 @@
                "village3-warp"
                "village3-farside"
                "snow-start"
-               ;;"snow-fort"
+               "snow-fort"
                "snow-flut-flut"
                "snow-pass-to-fort"
                "snow-by-ice-lake"
                "snow-by-ice-lake-alt"
-               ;;"snow-outside-fort"
+               "snow-outside-fort"
                "snow-outside-cave"
                "snow-across-from-flut"
                "maincave-start"
@@ -172,8 +172,12 @@
     (return #f)))
   #t)
 
+(defun get-index-of-vanilla-point ((point-name string))
+  (dotimes (i LIST_LENGTH)
+    (if (string= point-name (-> *checkpoint-list* i)) (return i)))
+  300)
+
 (defun set-values-in-checkpoint-list ((seed int))
-  ;; Step 0: initialize RNG with given seed
   (knuth-rand-init (the int64 seed))
 
   (let ((shuffled (the-as (array string)
@@ -190,54 +194,69 @@
                            "jungle-tower"
                            "sunken-start"))))
 
-    ;; Step 1: copy original values into shuffled array
+    ;; Step 1: copy original list
     (dotimes (i LIST_LENGTH)
       (set! (-> shuffled i) (-> *checkpoint-list* i)))
 
-    ;; Step 2: Fisher-Yates shuffle with restricted re-roll
+    ;; Step 2: Fisher-Yates shuffle avoiding restricted-to-restricted swaps
     (dotimes (i LIST_LENGTH)
-      (let ((j i)
-            (valid #f))
-        ;; keep rolling j until it’s valid
-        (while (not valid)
-          (set! j (+ i (knuth-rand-int-range 0 (- LIST_LENGTH i))))
-          (let ((i-restricted #f)
-                (j-restricted #f))
-            (dotimes (k 3)
-              (when (string= (-> shuffled i) (-> restricted k))
-                (set! i-restricted #t))
-              (when (string= (-> shuffled j) (-> restricted k))
-                (set! j-restricted #t)))
-            ;; valid if not both restricted
-            (when (not (and i-restricted j-restricted))
-              (set! valid #t))))
+      (let ((val-i (-> shuffled i))
+            (swapped #f))
+        (dotimes (offset (- LIST_LENGTH i))
+          (unless swapped
+            (let* ((j (+ i offset))
+                   (val-j (-> shuffled j))
+                   (i-restricted #f)
+                   (j-restricted #f))
+              ;; check if val-i is restricted
+              (dotimes (k 3) (when (string= val-i (-> restricted k)) (set! i-restricted #t)))
+              ;; check if val-j is restricted
+              (dotimes (k 3) (when (string= val-j (-> restricted k)) (set! j-restricted #t)))
+              ;; swap if valid
+              (when (not (and i-restricted j-restricted))
+                (let ((tmp val-i))
+                  (set! (-> shuffled i) val-j)
+                  (set! (-> shuffled j) tmp)
+                  (set! swapped #t))))))))
 
-        ;; swap i and j
-        (let ((tmp (-> shuffled i)))
-          (set! (-> shuffled i) (-> shuffled j))
-          (set! (-> shuffled j) tmp))))
-
-    ;; Step 3: copy shuffled values into checkpoint-list2
+    ;; Step 3: copy shuffled array to checkpoint-list2
     (dotimes (i LIST_LENGTH)
       (set! (-> *checkpoint-list2* i) (-> shuffled i)))
 
-    ;; Step 4: validation check for "0"
+;; (set! (-> *checkpoint-list2* (get-index-of-vanilla-point (the string (-> restricted 0))))
+;;       (-> restricted 1))
+
+    ;; Step 4: validation checks
     (dotimes (i LIST_LENGTH)
-      (when (string= (-> *checkpoint-list2* i) "0")
-        (format 0 "Error: 0 found on seed ~D at index ~D~%" seed i)))
- (set! *last-seed-used-for-generation* seed)
+      (let ((src (-> *checkpoint-list* i))
+            (dst (-> *checkpoint-list2* i)))
+        ;; check for "0"
+        (when (string= dst "0")
+          (format 0 "ShuffleError: 0 found on seed ~D at index ~D~%" seed i))
+        ;; check restricted-to-restricted
+        (dotimes (k 3)
+          (dotimes (l 3)
+            (when (and (not (= k l))
+                       (string= src (-> restricted k))
+                       (string= dst (-> restricted l)))
+              (format 0 "ShuffleError: Restricted point conflict: ~A -> ~A at index ~D on seed ~D~%"
+                      src dst i seed))))))
+
+    ;; Step 5: store last seed used
+    (set! *last-seed-used-for-generation* seed)
     (none)))
 
-(defun get-index-of-vanilla-point ((point-name string))
-  (dotimes (i LIST_LENGTH)
-    (if (string= point-name (-> *checkpoint-list* i)) (return i)))
-  300)
+(defun test-shuffles ((amount int))
+  (dotimes (i amount)
+    (set-values-in-checkpoint-list i))
+  (format 0 "Completed ~D shuffles.~%" amount)
+  (none))
 
 (define *last-warp-time* 0)
 
 
 (defun do-the-random-warp-thing ((point-name string))
-
+(set! (-> *target* control ground-pat material) (pat-material stone)) 
 (when *no-warp?*
 (set! *no-warp?* #f)
 (return (the time-frame #f))
@@ -254,7 +273,7 @@
     )
   (format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
   (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
-  (when (and (>= (- (current-time) *last-warp-time*) (seconds 3.5))
+  (when (and (>= (- (current-time) *last-warp-time*) (seconds 2))
             (!= (get-index-of-vanilla-point point-name) 300)
              (not (string= (-> *game-info* current-continue name) point-name)))
     (send-event *target*
