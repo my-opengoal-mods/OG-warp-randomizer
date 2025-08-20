@@ -202,50 +202,21 @@
     (dotimes (i LIST_LENGTH)
       (let ((j (+ i (knuth-rand-int-range 0 (- LIST_LENGTH i)))))
         (let ((val-i (-> shuffled i))
-              (val-j (-> shuffled j))
-              (i-restricted #f)
-              (j-restricted #f))
-
-          ;; check if val-i is restricted
-          (dotimes (k 3) (when (string= val-i (-> restricted k)) (set! i-restricted #t)))
-          ;; check if val-j is restricted
-          (dotimes (k 3) (when (string= val-j (-> restricted k)) (set! j-restricted #t)))
-
-          ;; Swap unless both points are restricted (and they are not the same point)
-          (unless (and i-restricted j-restricted (not (string= val-i val-j)))
+              (val-j (-> shuffled j)))
             (set! (-> shuffled i) val-j)
-            (set! (-> shuffled j) val-i)))))
-
+            (set! (-> shuffled j) val-i))))
 
     ;; Step 3: copy shuffled array to checkpoint-list2
     (dotimes (i LIST_LENGTH)
       (set! (-> *checkpoint-list2* i) (-> shuffled i)))
-
-;; (set! (-> *checkpoint-list2* (get-index-of-vanilla-point (the string (-> restricted 0))))
-;;       (-> restricted 1))
-
+      
     ;; Step 4: validation checks
     (dotimes (i LIST_LENGTH)
       (let ((src (-> *checkpoint-list* i))
             (dst (-> *checkpoint-list2* i)))
         ;; check for "0"
         (when (string= dst "0")
-          (format 0 "ShuffleError: 0 found on seed ~D at index ~D~%" seed i))
-        ;; check restricted-to-restricted
-        (dotimes (k 3)
-          (dotimes (l 3)
-            (when (and (not (= k l))
-                       (string= src (-> restricted k))
-                       (string= dst (-> restricted l)))
-              (format 0 "ShuffleError: Restricted point conflict: ~A -> ~A at index ~D on seed ~D~%"
-                      src dst i seed)
-              (format 0 "Rolling for seed ~D instead~%"
-                      (+ seed 1))
-                  (set-values-in-checkpoint-list (+ seed 1))
-                  (return #f)
-              
-
-                      )))))
+          (format 0 "ShuffleError: 0 found on seed ~D at index ~D~%" seed i))))
 
     ;; Step 5: store last seed used
     (set! *last-seed-used-for-generation* seed)
