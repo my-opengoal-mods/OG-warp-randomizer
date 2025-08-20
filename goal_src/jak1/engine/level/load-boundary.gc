@@ -176,7 +176,7 @@
   (dotimes (i LIST_LENGTH)
     (if (string= point-name (-> *checkpoint-list* i)) (return i)))
   300)
-
+(defun-extern set-values-in-checkpoint-list int symbol)
 (defun set-values-in-checkpoint-list ((seed int))
   (knuth-rand-init (the int64 seed))
 
@@ -199,23 +199,22 @@
       (set! (-> shuffled i) (-> *checkpoint-list* i)))
 
     ;; Step 2: Fisher-Yates shuffle avoiding restricted-to-restricted swaps
-(dotimes (i LIST_LENGTH)
-  ;; pick random j from i..LIST_LENGTH-1
-  (let ((j (+ i (knuth-rand-int-range 0 (- LIST_LENGTH i)))))
-    (let ((val-i (-> shuffled i))
-          (val-j (-> shuffled j))
-          (i-restricted #f)
-          (j-restricted #f))
-      
-      ;; check if val-i is restricted
-      (dotimes (k 3) (when (string= val-i (-> restricted k)) (set! i-restricted #t)))
-      ;; check if val-j is restricted
-      (dotimes (k 3) (when (string= val-j (-> restricted k)) (set! j-restricted #t)))
+    (dotimes (i LIST_LENGTH)
+      (let ((j (+ i (knuth-rand-int-range 0 (- LIST_LENGTH i)))))
+        (let ((val-i (-> shuffled i))
+              (val-j (-> shuffled j))
+              (i-restricted #f)
+              (j-restricted #f))
 
-      ;; only swap if both are not restricted
-      (unless (and i-restricted j-restricted)
-        (set! (-> shuffled i) val-j)
-        (set! (-> shuffled j) val-i)))))
+          ;; check if val-i is restricted
+          (dotimes (k 3) (when (string= val-i (-> restricted k)) (set! i-restricted #t)))
+          ;; check if val-j is restricted
+          (dotimes (k 3) (when (string= val-j (-> restricted k)) (set! j-restricted #t)))
+
+          ;; Swap unless both points are restricted (and they are not the same point)
+          (unless (and i-restricted j-restricted (not (string= val-i val-j)))
+            (set! (-> shuffled i) val-j)
+            (set! (-> shuffled j) val-i)))))
 
 
     ;; Step 3: copy shuffled array to checkpoint-list2
@@ -239,12 +238,19 @@
                        (string= src (-> restricted k))
                        (string= dst (-> restricted l)))
               (format 0 "ShuffleError: Restricted point conflict: ~A -> ~A at index ~D on seed ~D~%"
-                      src dst i seed))))))
+                      src dst i seed)
+              (format 0 "Rolling for seed ~D instead~%"
+                      (+ seed 1))
+                  (set-values-in-checkpoint-list (+ seed 1))
+                  (return #f)
+              
+
+                      )))))
 
     ;; Step 5: store last seed used
     (set! *last-seed-used-for-generation* seed)
    ;; (set! (-> *game-info* money-per-level v1-53) (the-as uint 0))
-    (none)))
+    #f))
 
 (defun test-shuffles ((amount int))
   (dotimes (i amount)
