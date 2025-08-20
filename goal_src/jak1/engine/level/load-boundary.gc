@@ -199,25 +199,24 @@
       (set! (-> shuffled i) (-> *checkpoint-list* i)))
 
     ;; Step 2: Fisher-Yates shuffle avoiding restricted-to-restricted swaps
-    (dotimes (i LIST_LENGTH)
-      (let ((val-i (-> shuffled i))
-            (swapped #f))
-        (dotimes (offset (- LIST_LENGTH i))
-          (unless swapped
-            (let* ((j (+ i offset))
-                   (val-j (-> shuffled j))
-                   (i-restricted #f)
-                   (j-restricted #f))
-              ;; check if val-i is restricted
-              (dotimes (k 3) (when (string= val-i (-> restricted k)) (set! i-restricted #t)))
-              ;; check if val-j is restricted
-              (dotimes (k 3) (when (string= val-j (-> restricted k)) (set! j-restricted #t)))
-              ;; swap if valid
-              (when (not (and i-restricted j-restricted))
-                (let ((tmp val-i))
-                  (set! (-> shuffled i) val-j)
-                  (set! (-> shuffled j) tmp)
-                  (set! swapped #t))))))))
+(dotimes (i LIST_LENGTH)
+  ;; pick random j from i..LIST_LENGTH-1
+  (let ((j (+ i (knuth-rand-int-range 0 (- LIST_LENGTH i)))))
+    (let ((val-i (-> shuffled i))
+          (val-j (-> shuffled j))
+          (i-restricted #f)
+          (j-restricted #f))
+      
+      ;; check if val-i is restricted
+      (dotimes (k 3) (when (string= val-i (-> restricted k)) (set! i-restricted #t)))
+      ;; check if val-j is restricted
+      (dotimes (k 3) (when (string= val-j (-> restricted k)) (set! j-restricted #t)))
+
+      ;; only swap if both are not restricted
+      (unless (and i-restricted j-restricted)
+        (set! (-> shuffled i) val-j)
+        (set! (-> shuffled j) val-i)))))
+
 
     ;; Step 3: copy shuffled array to checkpoint-list2
     (dotimes (i LIST_LENGTH)
@@ -244,6 +243,7 @@
 
     ;; Step 5: store last seed used
     (set! *last-seed-used-for-generation* seed)
+   ;; (set! (-> *game-info* money-per-level v1-53) (the-as uint 0))
     (none)))
 
 (defun test-shuffles ((amount int))

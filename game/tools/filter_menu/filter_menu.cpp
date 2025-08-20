@@ -58,30 +58,30 @@ void FiltersMenu::draw_window() {
       }
     }
 
-    // if (ImGui::Button("Add Contains")) {
-    //   DebugTextFilter new_filter;
-    //   new_filter.type = DebugTextFilter::Type::CONTAINS;
-    //   current_filters.push_back(new_filter);
-    //   g_saved_filters.push_back("");  // keep globals in sync
-    // }
-    // ImGui::SameLine();
-    // if (ImGui::Button("Add Not-Contains")) {
-    //   DebugTextFilter new_filter;
-    //   new_filter.type = DebugTextFilter::Type::NOT_CONTAINS;
-    //   current_filters.push_back(new_filter);
-    //   g_saved_filters.push_back("");  // keep globals in sync
-    // }
-    // if (ImGui::Button("Clear Filters")) {
-    //   current_filters.clear();
-    //   g_saved_filters.clear();
-    // }
+    if (ImGui::Button("Add Seed Field")) {
+      DebugTextFilter new_filter;
+      new_filter.type = DebugTextFilter::Type::CONTAINS;
+      current_filters.push_back(new_filter);
+      g_saved_filters.push_back("");  // keep globals in sync
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Add Not-Contains")) {
+      DebugTextFilter new_filter;
+      new_filter.type = DebugTextFilter::Type::NOT_CONTAINS;
+      current_filters.push_back(new_filter);
+      g_saved_filters.push_back("");  // keep globals in sync
+    }
+    if (ImGui::Button("Clear Fields")) {
+      current_filters.clear();
+      g_saved_filters.clear();
+    }
 
-    // if (ImGui::Checkbox("Enable Distance Check", &Gfx::g_debug_settings.text_check_range)) {
-    // }
-    // if (Gfx::g_debug_settings.text_check_range) {
-    //   if (ImGui::SliderFloat("Max Range", &Gfx::g_debug_settings.text_max_range, 0, 250)) {
-    //   }
-    // }
+    if (ImGui::Checkbox("Enable Distance Check", &Gfx::g_debug_settings.text_check_range)) {
+    }
+    if (Gfx::g_debug_settings.text_check_range) {
+      if (ImGui::SliderFloat("Max Range", &Gfx::g_debug_settings.text_max_range, 0, 250)) {
+      }
+    }
 
     // --- NEW RANDOM + RESET BUTTONS ---
     ImGui::Separator();
