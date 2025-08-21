@@ -786,7 +786,9 @@
       (let ((gp-0 (new 'stack-no-clear 'vector)))
         (set! (-> gp-0 quad) (-> self root trans quad))
         (let ((t9-1 (-> (the-as (state plat-button) (find-parent-state)) trans))) (if t9-1 (t9-1)))
-        (citb-exit-plat-move-player gp-0)))
+        ;;(citb-exit-plat-move-player gp-0)
+        (do-the-random-warp-thing "citadel-elevator")
+        ))
   :post transform-post)
 
 (defstate plat-button-move-upward (citb-exit-plat)
@@ -796,7 +798,9 @@
       (let ((gp-0 (new 'stack-no-clear 'vector)))
         (set! (-> gp-0 quad) (-> self root trans quad))
         (let ((t9-1 (-> (the-as (state plat-button) (find-parent-state)) trans))) (if t9-1 (t9-1)))
-        (citb-exit-plat-move-player gp-0)))
+        ;;(citb-exit-plat-move-player gp-0)
+        (do-the-random-warp-thing "finalboss-start")
+        ))
   :post transform-post)
 
 (defmethod can-activate? ((this citb-exit-plat))

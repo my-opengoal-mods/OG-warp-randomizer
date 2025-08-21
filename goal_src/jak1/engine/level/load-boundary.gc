@@ -9,7 +9,7 @@
 (define *no-warp?* #f)
 ;; DECOMP BEGINS
 (define *last-seed-used-for-generation* 0)
-(defconstant LIST_LENGTH 66)
+(defconstant LIST_LENGTH 67)
 (define *checkpoint-list*
   (the-as (array string)
           (new 'static
@@ -82,6 +82,7 @@
                "citadel-launch-end"
                "citadel-generator-start"
                "citadel-generator-end"
+               "citadel-elevator"
                "finalboss-start"
                "finalboss-fight")))
 
@@ -96,7 +97,7 @@
                "not-set"
                "not-set"
                ;;"not-set"
-               ;;"not-set"
+               "not-set"
                "not-set"
                "not-set"
                "not-set"
@@ -184,15 +185,7 @@
                    (new 'static 'boxed-array
                         :type string
                         :length LIST_LENGTH
-                        :allocated-length LIST_LENGTH)))
-        (restricted (the-as (array string)
-                      (new 'static 'boxed-array
-                           :type string
-                           :length 3
-                           :allocated-length 3
-                           "finalboss-start"
-                           "jungle-tower"
-                           "sunken-start"))))
+                        :allocated-length LIST_LENGTH))))
 
     ;; Step 1: copy original list
     (dotimes (i LIST_LENGTH)
@@ -243,11 +236,7 @@
 
     (if (= (pc-get-rand-seed) 0)
     (set-values-in-checkpoint-list my-seed)
-    (set-values-in-checkpoint-list (pc-get-rand-seed))
-    )
-    ;;(set-values-in-checkpoint-list 75)
-
-    )
+    (set-values-in-checkpoint-list (pc-get-rand-seed))))
   (format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
   (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
   (when (and (>= (- (current-time) *last-warp-time*) (seconds 2))
