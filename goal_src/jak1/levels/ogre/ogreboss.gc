@@ -837,6 +837,7 @@
         (close-specific-task! (game-task ogre-boss) (task-status need-hint))
         (suspend)
         (send-event *target* 'continue (get-continue-by-name *game-info* "ogre-start"))
+        (do-the-random-warp-thing "ogre-start")
         (ogreboss-inc-try-count))
       (set-setting! 'music 'ogreboss 0.0 0)
       (go ogreboss-wait-for-player))
