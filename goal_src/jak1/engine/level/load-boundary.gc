@@ -7,6 +7,7 @@
 (require "engine/gfx/sky/sky-tng.gc")
 (require "engine/game/settings.gc")
 (define *no-warp?* #f)
+(define validation-checks #f)
 ;; DECOMP BEGINS
 (define *last-seed-used-for-generation* 0)
 (defconstant LIST_LENGTH 67)
@@ -177,7 +178,30 @@
   (dotimes (i LIST_LENGTH)
     (if (string= point-name (-> *checkpoint-list* i)) (return i)))
   300)
+(defun get-index-of-shuffled-point ((point-name string))
+  (dotimes (i LIST_LENGTH)
+    (if (string= point-name (-> *checkpoint-list2* i)) (return i)))
+  300)
 (defun-extern set-values-in-checkpoint-list int symbol)
+
+(defun prevent-forbidden-pair ((shuffled (array string))
+                               (orig-name string)
+                               (forbidden-target string))
+  (let ((orig-idx (get-index-of-vanilla-point orig-name)))
+    (when (and (< orig-idx LIST_LENGTH)
+               (string= (-> shuffled orig-idx) forbidden-target))
+      (let ((swap-idx -1))
+        ;; scan once; pick the first safe candidate (no early returns)
+        (dotimes (i LIST_LENGTH)
+          (when (and (= swap-idx -1)         ;; only set once
+                     (!= i orig-idx)
+                     (not (string= (-> shuffled i) forbidden-target)))
+            (set! swap-idx i)))
+        (when (!= swap-idx -1)
+          (let ((tmp (-> shuffled swap-idx)))
+            (set! (-> shuffled swap-idx) (-> shuffled orig-idx))
+            (set! (-> shuffled orig-idx) tmp)))))))
+
 (defun set-values-in-checkpoint-list ((seed int))
   (knuth-rand-init (the int64 seed))
 
@@ -191,7 +215,7 @@
     (dotimes (i LIST_LENGTH)
       (set! (-> shuffled i) (-> *checkpoint-list* i)))
 
-    ;; Step 2: Fisher-Yates shuffle avoiding restricted-to-restricted swaps
+    ;; Step 2: Fisher-Yates shuffle
     (dotimes (i LIST_LENGTH)
       (let ((j (+ i (knuth-rand-int-range 0 (- LIST_LENGTH i)))))
         (let ((val-i (-> shuffled i))
@@ -199,31 +223,66 @@
             (set! (-> shuffled i) val-j)
             (set! (-> shuffled j) val-i))))
 
+    ;; Step 2.5: Prevent forbidden pairings
+    (prevent-forbidden-pair shuffled "village1-hut" "beach-start")
+    (prevent-forbidden-pair shuffled "village1-warp" "training-warp")
+    (prevent-forbidden-pair shuffled "finalboss-fight" "finalboss-start")
+    (prevent-forbidden-pair shuffled "village2-dock" "rolling-start")
+    (prevent-forbidden-pair shuffled "jungle-start" "jungle-tower")
+    (prevent-forbidden-pair shuffled "sunken-tube1" "sunkenb-helix")
+
     ;; Step 3: copy shuffled array to checkpoint-list2
     (dotimes (i LIST_LENGTH)
       (set! (-> *checkpoint-list2* i) (-> shuffled i)))
-      
+
     ;; Step 4: validation checks
+    (when validation-checks
     (dotimes (i LIST_LENGTH)
       (let ((src (-> *checkpoint-list* i))
             (dst (-> *checkpoint-list2* i)))
+        ;; check for duplicates in *checkpoint-list*
+        (dotimes (j LIST_LENGTH)
+          (when (and (!= i j) (string= src (-> *checkpoint-list* j)))
+            (format 0 "DuplicateError: ~A in checkpoint-list at ~D and ~D~%" src i j)))
+        ;; check for duplicates in *checkpoint-list2*
+        (dotimes (j LIST_LENGTH)
+          (when (and (!= i j) (string= dst (-> *checkpoint-list2* j)))
+            (format 0 "DuplicateError: ~A in checkpoint-list2 at ~D and ~D~%" dst i j)))
         ;; check for "0"
         (when (string= dst "0")
-          (format 0 "ShuffleError: 0 found on seed ~D at index ~D~%" seed i))))
+          (format 0 "ZeroError: 0 found on seed ~D at index ~D~%" seed i))
+        ;; explicit forbidden pair checks
+        (when (and (string= src "village1-hut")
+                   (string= dst "beach-start"))
+          (format 0 "ForbiddenPairError: ~A mapped to ~A on seed ~D at index ~D~%" src dst seed i))
+        (when (and (string= src "village1-warp")
+                   (string= dst "training-warp"))
+          (format 0 "ForbiddenPairError: ~A mapped to ~A on seed ~D at index ~D~%" src dst seed i))
+        (when (and (string= src "finalboss-fight")
+                   (string= dst "finalboss-start"))
+          (format 0 "ForbiddenPairError: ~A mapped to ~A on seed ~D at index ~D~%" src dst seed i))
+        (when (and (string= src "village2-dock")
+                   (string= dst "rolling-start"))
+          (format 0 "ForbiddenPairError: ~A mapped to ~A on seed ~D at index ~D~%" src dst seed i))
+        (when (and (string= src "jungle-start")
+                   (string= dst "jungle-tower"))
+          (format 0 "ForbiddenPairError: ~A mapped to ~A on seed ~D at index ~D~%" src dst seed i))
+        (when (and (string= src "sunken-tube1")
+                   (string= dst "sunkenb-helix"))
+          (format 0 "ForbiddenPairError: ~A mapped to ~A on seed ~D at index ~D~%" src dst seed i)))))
 
     ;; Step 5: store last seed used
     (set! *last-seed-used-for-generation* seed)
    ;; (set! (-> *game-info* money-per-level v1-53) (the-as uint 0))
     #f))
 
-(defun test-shuffles ((amount int))
+(defun test-shuffles ((start int) (amount int))
   (dotimes (i amount)
-    (set-values-in-checkpoint-list i))
+    (set-values-in-checkpoint-list (+ start i)))
   (format 0 "Completed ~D shuffles.~%" amount)
   (none))
 
 (define *last-warp-time* 0)
-
 
 (defun do-the-random-warp-thing ((point-name string))
 (set! (-> *target* control ground-pat material) (pat-material stone)) 
@@ -237,9 +296,9 @@
     (if (= (pc-get-rand-seed) 0)
     (set-values-in-checkpoint-list my-seed)
     (set-values-in-checkpoint-list (pc-get-rand-seed))))
-  (format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
+  ;;(format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
   (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
-  (when (and (>= (- (current-time) *last-warp-time*) (seconds 2))
+  (when (and (>= (- (current-time) *last-warp-time*) (seconds 1))
             (!= (get-index-of-vanilla-point point-name) 300)
              (not (string= (-> *game-info* current-continue name) point-name)))
     (send-event *target*

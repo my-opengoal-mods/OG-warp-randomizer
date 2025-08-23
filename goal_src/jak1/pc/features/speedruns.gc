@@ -484,13 +484,14 @@
       ;;                 (font-color flat-yellow)
       ;;                 (font-flags shadow kerning))
 
-                      (draw-string-xy (string-format "Warp randomizer ~%Mod Version: ~S ~%LAST SEED USED FOR GENERATION: ~D"
+                      (draw-string-xy (string-format "Warp Randomizer Version: ~S ~%Last Seed Used for Generation: ~D~%Current Checkpoint: ~S"
                                      *mod-version-text*
-
-                                     *last-seed-used-for-generation*)
+                                     *last-seed-used-for-generation*
+                                     ;;(-> *checkpoint-list* (get-index-of-shuffled-point (-> *game-info* current-continue name)))
+                                     (-> *game-info* current-continue name))
                       buf
                       3
-                      (- 222 (* 8 3))
+                      (- 223 (* 8 3))
                       (font-color flat-yellow)
                       (font-flags shadow kerning))
                       ))

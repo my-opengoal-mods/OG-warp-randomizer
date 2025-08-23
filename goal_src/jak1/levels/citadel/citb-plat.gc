@@ -788,6 +788,7 @@
         (let ((t9-1 (-> (the-as (state plat-button) (find-parent-state)) trans))) (if t9-1 (t9-1)))
         ;;(citb-exit-plat-move-player gp-0)
         (do-the-random-warp-thing "citadel-elevator")
+        (go-virtual plat-button-teleport-to-other-end)
         ))
   :post transform-post)
 
@@ -800,6 +801,7 @@
         (let ((t9-1 (-> (the-as (state plat-button) (find-parent-state)) trans))) (if t9-1 (t9-1)))
         ;;(citb-exit-plat-move-player gp-0)
         (do-the-random-warp-thing "finalboss-start")
+        (go-virtual plat-button-teleport-to-other-end)
         ))
   :post transform-post)
 
