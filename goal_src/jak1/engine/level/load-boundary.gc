@@ -298,7 +298,7 @@
     (set-values-in-checkpoint-list (pc-get-rand-seed))))
   ;;(format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
   (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
-  (when (and (>= (- (current-time) *last-warp-time*) (seconds 1))
+  (when (and (>= (- (current-time) *last-warp-time*) (seconds 2.5))
             (!= (get-index-of-vanilla-point point-name) 300)
              (not (string= (-> *game-info* current-continue name) point-name)))
     (set! (-> *game-info* current-continue) (get-continue-by-name *game-info* point-name))
