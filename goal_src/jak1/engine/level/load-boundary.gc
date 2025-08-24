@@ -229,7 +229,7 @@
     (prevent-forbidden-pair shuffled "village1-warp" "training-warp")
     (prevent-forbidden-pair shuffled "finalboss-fight" "finalboss-start")
     (prevent-forbidden-pair shuffled "finalboss-start" "finalboss-fight")
-    (prevent-forbidden-pair shuffled "village2-dock" "rolling-start")
+    ;;(prevent-forbidden-pair shuffled "village2-dock" "rolling-start")
     (prevent-forbidden-pair shuffled "jungle-start" "jungle-tower")
     (prevent-forbidden-pair shuffled "sunken-tube1" "sunkenb-helix")
     (prevent-forbidden-pair shuffled "maincave-to-darkcave" "darkcave-start")
