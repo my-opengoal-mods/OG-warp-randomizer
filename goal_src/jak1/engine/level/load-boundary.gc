@@ -97,7 +97,8 @@
                :allocated-length LIST_LENGTH
                "not-set"
                "not-set"
-               ;;"not-set"
+               "not-set"
+               "not-set"
                "not-set"
                "not-set"
                "not-set"
