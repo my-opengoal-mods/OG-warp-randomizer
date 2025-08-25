@@ -20,10 +20,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Begin function defintions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
-
+(define *auto-load-happened?* #f)
 (defun runs-every-frame ()
   ;;(increase-power-cell-by-one) This is a call to increase-power-cell-by-one defined in mod-common-functions.gc
-
+  (when (and (= (-> *game-info* money-per-level 16) 0) (not *auto-load-happened?*))
+    (auto-save-command 'restore 0 0 *active-pool*)
+    (set! *auto-load-happened?* #t)
+  )
     (when #t ;;(-> *randomizer-settings* use-random-seed?)
     ;; burn through a random number every frame for improved randomness
     (knuth-rand-advance-seed)
@@ -78,7 +81,7 @@
        ;; Code here runs as soon as you pickup small green eco
        )
       (((pickup-type eco-green))
-       ;; Code here runs as soon as you pickup big green eco 
+       ;; Code here runs as soon as you pickup big green eco
        ))
     (when from-vent?
       ;; Code here runs only if the eco was picked up from a vent
