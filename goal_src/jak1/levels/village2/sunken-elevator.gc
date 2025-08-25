@@ -76,6 +76,7 @@
   :trans
     (behavior ()
             (do-the-random-warp-thing "village2-start")
+            ;;(set-continue! *game-info* "village2-start")
         (go-virtual plat-button-teleport-to-other-end)
       ;; (let ((t9-0 (-> (method-of-type plat-button plat-button-move-upward) trans))) (if t9-0 (t9-0)))
       ;; (when (and (-> self play-at-top-going-up-camera?) (>= 0.14 (-> self path-pos)))
@@ -103,6 +104,7 @@
   :trans
     (behavior ()
                 (do-the-random-warp-thing "sunken-start")
+                ;;(set-continue! *game-info* "sunken-start")
         (go-virtual plat-button-teleport-to-other-end)
       ;; (let ((s5-0 (new 'stack-no-clear 'vector))
       ;;       (gp-0 (new 'stack-no-clear 'vector)))
