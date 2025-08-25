@@ -9,7 +9,7 @@
 (define *no-warp?* #f)
 (define validation-checks #f)
 ;; DECOMP BEGINS
-(define *last-seed-used-for-generation* 0)
+(define *last-seed-used-for-generation* (the-as uint 0))
 (defconstant LIST_LENGTH 67)
 (define *checkpoint-list*
   (the-as (array string)
@@ -166,11 +166,21 @@
 (defun-extern knuth-rand-init int int)
 (defun-extern knuth-rand-int-range int int int)
 (defun-extern knuth-rand-advance-seed int)
+(defun crash ()
+
+(set! *target* (the-as target "hdfhjkehsshjfkeshtjkhslkjdhjlk,r")))
+(define *val-storage* 0)
 (defun have-we-set-up-the-warp-list? ()
   (dotimes (i LIST_LENGTH)
     (when (string= (-> *checkpoint-list2* i) "not-set")
-    (when (= my-seed 69) (set! my-seed (knuth-rand-advance-seed))
-    (format 0 "WARP-RAND: SEED WAS 69 SETTING IT TO  ~D~%" my-seed)
+    (when (= (-> *game-info* money-per-level 16) 69)
+
+    (set! *val-storage* (knuth-rand-advance-seed))
+    (format 0 "WARP-RAND: SEED WAS 69 SETTING IT TO  ~D~%" *val-storage*
+    )
+    (set! (-> *game-info* money-per-level 16) *val-storage*)
+        (format 0 "WARP-RAND: SEED WAS 69 SETTING IT TO  ~D~%" (-> *game-info* money-per-level 16)
+    )
     )
     (return #f)))
   #t)
@@ -183,7 +193,7 @@
   (dotimes (i LIST_LENGTH)
     (if (string= point-name (-> *checkpoint-list2* i)) (return i)))
   300)
-(defun-extern set-values-in-checkpoint-list int symbol)
+(defun-extern set-values-in-checkpoint-list uint symbol)
 
 (defun prevent-forbidden-pair ((shuffled (array string))
                                (orig-name string)
@@ -203,7 +213,7 @@
             (set! (-> shuffled swap-idx) (-> shuffled orig-idx))
             (set! (-> shuffled orig-idx) tmp)))))))
 
-(defun set-values-in-checkpoint-list ((seed int))
+(defun set-values-in-checkpoint-list ((seed uint))
   (knuth-rand-init (the int64 seed))
 
   (let ((shuffled (the-as (array string)
@@ -284,14 +294,14 @@
 
 (defun test-shuffles ((start int) (amount int))
   (dotimes (i amount)
-    (set-values-in-checkpoint-list (+ start i)))
+    (set-values-in-checkpoint-list (the-as uint (+ start i))))
   (format 0 "Completed ~D shuffles.~%" amount)
   (none))
 
 (define *last-warp-time* 0)
 
 (defun do-the-random-warp-thing ((point-name string))
-(set! (-> *target* control ground-pat material) (pat-material stone)) 
+(set! (-> *target* control ground-pat material) (pat-material stone))
 (when *no-warp?*
 (set! *no-warp?* #f)
 (return (the time-frame #f))
@@ -299,9 +309,11 @@
   (when (not (have-we-set-up-the-warp-list?))
     (format 0 "WARP-RAND: We still have poop in the checkpoint list, setting values~%")
 
-    (if (= (pc-get-rand-seed) 0)
-    (set-values-in-checkpoint-list my-seed)
-    (set-values-in-checkpoint-list (pc-get-rand-seed))))
+    (if (= (pc-get-rand-seed) (the-as uint 0))
+    (set-values-in-checkpoint-list (-> *game-info* money-per-level 16))
+    (set-values-in-checkpoint-list (the-as uint (pc-get-rand-seed))))
+   (auto-save-command 'auto-save 0 0 *default-pool*)
+    )
   ;;(format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
   (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
   (when (and (>= (- (current-time) *last-warp-time*) (seconds 2.5))
@@ -318,9 +330,26 @@
   (dotimes (i LIST_LENGTH)
     (format 0 "WARP-RAND: ~D: ~A is mapped to ~A~%" i (-> *checkpoint-list* i) (-> *checkpoint-list2* i))))
 
+;;seed 69 is treated as "0"
+
+(defun get-rand-seed-from-mem ()
+  ;;(format #t "getting unlock level it is ~D~%" (-> *game-info* money-per-level 3))
+  (the int (-> *game-info* money-per-level 16)))
+
+(defun update-rand-seed-in-mem ((arg1 int))
+  "adds to the unlock level"
+  (set! (-> *game-info* money-per-level 16) (+ 0 (the-as int arg1)))
+  (auto-save-command 'auto-save 0 0 *default-pool*)
+  (when *debug-segment*
+    (format #t "WARP RAND:Setting Seed in mem to ~D~%" (-> *game-info* money-per-level 16)))
+  (none))
+
+
+
+
 (defun reset-warp-randomizer ()
 "sets the warp randomizer back to a clean slate"
-(set! my-seed 69)
+(set! (-> *game-info* money-per-level 16) 69)
 (dotimes (i LIST_LENGTH)
       (set! (-> *checkpoint-list2* i) "not-set"))
 (have-we-set-up-the-warp-list?)

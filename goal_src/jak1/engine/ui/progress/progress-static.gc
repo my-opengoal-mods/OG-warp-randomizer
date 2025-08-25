@@ -288,7 +288,8 @@
   (cave 13)
   (lavatube 14)
   (citadel 15)
-  (max 16))
+  (test-zone 16)
+  (max 17))
 
 ;; maps level-info indices to the appropriate offset in *level-task-data*
 (define *level-task-data-remap*
@@ -319,6 +320,10 @@
        (level-task-data-index citadel) ;; finalboss?
        (level-task-data-index misty) ;; demo?
        (level-task-data-index misty) ;; intro?
+       (level-task-data-index misty)
+       (level-task-data-index misty)
+       (level-task-data-index test-zone)
+       (level-task-data-index test-zone)
        ))
 
 ;; maps goal language ID to its name string ID

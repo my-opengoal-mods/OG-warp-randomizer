@@ -189,7 +189,7 @@
   (none))
 
 (defun start-speedrun ((category speedrun-category))
-(reset-warp-randomizer)
+
    (set! *no-warp?* #t)
   ;; disable hints (turned back on later for all-cutscenes category)
   (false! (-> *setting-control* default play-hints))
@@ -275,6 +275,7 @@
      (format 0 "start-speedrun: unrecognized category ~S~%" (enum->string speedrun-category (-> *speedrun-info* category)))))
   (enforce-speedrun-pc-settings)
   ;; enable auto saving by default
+
   (set! (-> *setting-control* default auto-save) #t)
   (none))
 
@@ -424,7 +425,7 @@
     ;; reset actors to ensure any above changes take effect
     (reset-actors 'life)
     ;; autosave any changes back to file
-
+  (reset-warp-randomizer)
     (auto-save-command 'auto-save 0 0 *default-pool*))
   (none))
 
