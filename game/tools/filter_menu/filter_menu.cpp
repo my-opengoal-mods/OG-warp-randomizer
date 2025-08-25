@@ -55,6 +55,7 @@ void FiltersMenu::draw_window() {
       if (ImGui::InputText(fmt::format("##filter-{}", i).c_str(), &current_filters[i].content)) {
         // Save into global whenever edited
         g_saved_filters[i] = current_filters[i].content;
+        Gfx::g_debug_settings.save_settings();
       }
     }
 
