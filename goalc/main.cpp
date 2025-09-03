@@ -147,6 +147,7 @@ int main(int argc, char** argv) {
       });
     }
     repl_startup_func();
+    compiler->run_front_end_on_string("(lt)(mi)");
 
     // Poll Terminal
     while (status != ReplStatus::WANT_EXIT) {
