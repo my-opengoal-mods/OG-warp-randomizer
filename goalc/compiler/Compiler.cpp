@@ -143,10 +143,7 @@ FileEnv* Compiler::compile_object_file(const std::string& name,
       compile_top_level_function("top-level", std::move(code), compilation_env));
 
   if (!allow_emit && !file_env->is_empty()) {
-    m_listener.connect_to_target();
-    compile_object_file(name,code,true);
-
-   //throw std::runtime_error("Compilation generated code, but wasn't supposed to");
+    throw std::runtime_error("Compilation generated code, but wasn't supposed to");
   }
 
   return file_env;
