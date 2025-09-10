@@ -476,20 +476,24 @@
       (if (or (= (-> *game-info* fuel) 0.0)
               (movie?))
           ;; BIG VERSION when fuel=0 or movie? is true
-          (draw-string-xy (string-format "Warp Randomizer Version: ~S ~%Last Seed Used for Generation: ~D~%MEMCARD-VAL: ~D~%Current Checkpoint: ~S"
+          (draw-string-xy (string-format "Warp Randomizeder Version: ~S ~%Last Seed Used for Generation: ~D~%MEMCARD-VAL: ~D~%Current Checkpoint: ~S"
                                          *mod-version-text*
                                          *last-seed-used-for-generation*
                                          *memory-card-seed*
-                                         (-> *game-info* current-continue name))
+                                     (-> *game-info* current-continue name)
+                                     ;;(-> *checkpoint-list* (get-index-of-shuffled-point (-> *game-info* current-continue name)))
+                                     )
                           buf
                           3
                           (- 223 (* 8 4))
                           (font-color flat-yellow)
                           (font-flags shadow kerning))
         ;; SMALL VERSION otherwise
-        (draw-string-xy (string-format "Last Seed Used for Generation: ~D~%Current Checkpoint: ~S"
-                                       *last-seed-used-for-generation*
-                                       (-> *game-info* current-continue name))
+        (draw-string-xy (string-format "Current Seed: ~D~%Current Checkpoint: ~S"
+                                       *memory-card-seed*
+                                     (-> *game-info* current-continue name)
+                                     ;;(-> *checkpoint-list* (get-index-of-shuffled-point (-> *game-info* current-continue name)))
+                                     )
                         buf
                         3
                         (- 223 (* 8 2))
