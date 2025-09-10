@@ -240,6 +240,7 @@
     (prevent-forbidden-pair shuffled "snow-across-from-flut" "snow-flut-flut")
     (prevent-forbidden-pair shuffled "snow-outside-fort" "snow-fort")
     (prevent-forbidden-pair shuffled "maincave-to-robocave" "robocave-bottom")
+    (prevent-forbidden-pair shuffled "village3-farside" "lavatube-end")
     ;; Step 3: copy shuffled array to checkpoint-list2
     (dotimes (i LIST_LENGTH)
       (set! (-> *checkpoint-list2* i) (-> shuffled i)))

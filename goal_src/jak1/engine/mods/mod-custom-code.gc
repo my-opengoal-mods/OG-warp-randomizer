@@ -28,7 +28,7 @@
     (set! *auto-load-happened?* #t)
     (process-spawn-function process
       (lambda :behavior process ()
-        (suspend-for (seconds 1))
+        (suspend-for (seconds 2))
         (auto-save-command 'restore 0 0 *active-pool*))))
   (when #t ;;(-> *randomizer-settings* use-random-seed?)
     ;; burn through a random number every frame for improved randomness
