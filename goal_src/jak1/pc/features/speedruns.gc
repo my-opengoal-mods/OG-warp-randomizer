@@ -473,27 +473,27 @@
   "Draw speedrun related settings in the bottom left corner"
   (when (and (-> *pc-settings* speedrunner-mode?) (not (paused?)))
     (with-dma-buffer-add-bucket ((buf (-> (current-frame) global-buf)) (bucket-id subtitle))
-      ;; (draw-string-xy (string-format "Speedrunner Mode ~%Mod Version: ~S ~%Category: ~S ~S~%Run Started: ~S~%LAST SEED USED FOR GENERATION: ~D"
-      ;;                                *mod-version-text*
-      ;;                                (enum->string speedrun-category (-> *speedrun-info* category))
-      ;;                                (if (-> *pc-settings* skip-movies?) "(CS Skips)" "(No CS Skips)")
-      ;;                                (if (-> *speedrun-info* has-started?) "Yes" "No")
-      ;;                                *last-seed-used-for-generation*)
-      ;;                 buf
-      ;;                 5
-      ;;                 (- 222 (* 8 5))
-      ;;                 (font-color flat-yellow)
-      ;;                 (font-flags shadow kerning))
+      (if (or (= (-> *game-info* fuel) 0.0)
+              (movie?))
+          ;; BIG VERSION when fuel=0 or movie? is true
+          (draw-string-xy (string-format "Warp Randomizer Version: ~S ~%Last Seed Used for Generation: ~D~%MEMCARD-VAL: ~D~%Current Checkpoint: ~S"
+                                         *mod-version-text*
+                                         *last-seed-used-for-generation*
+                                         *memory-card-seed*
+                                         (-> *game-info* current-continue name))
+                          buf
+                          3
+                          (- 223 (* 8 4))
+                          (font-color flat-yellow)
+                          (font-flags shadow kerning))
+        ;; SMALL VERSION otherwise
+        (draw-string-xy (string-format "Last Seed Used for Generation: ~D~%Current Checkpoint: ~S"
+                                       *last-seed-used-for-generation*
+                                       (-> *game-info* current-continue name))
+                        buf
+                        3
+                        (- 223 (* 8 2))
+                        (font-color flat-yellow)
+                        (font-flags shadow kerning)))))
+                        (none))
 
-                      (draw-string-xy (string-format "Warp Randomizer Version: ~S ~%Last Seed Used for Generation: ~D~%Current Checkpoint: ~S"
-                                     *mod-version-text*
-                                     *last-seed-used-for-generation*
-                                     ;;(-> *checkpoint-list* (get-index-of-shuffled-point (-> *game-info* current-continue name)))
-                                     (-> *game-info* current-continue name))
-                      buf
-                      3
-                      (- 223 (* 8 3))
-                      (font-color flat-yellow)
-                      (font-flags shadow kerning))
-                      ))
-  (none))

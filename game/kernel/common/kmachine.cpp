@@ -1281,7 +1281,7 @@ void init_common_pc_port_functions(
   make_func_symbol_func("pc-get-display-mode", (void*)pc_get_display_mode);
   make_func_symbol_func("pc-set-display-mode!", (void*)pc_set_display_mode);
   make_func_symbol_func("pc-get-display-count", (void*)pc_get_display_count);
-  make_func_symbol_func("pc-get-rand-seed", (void*)pc_get_rand_seed);
+  make_func_symbol_func("pc-get-set-seed", (void*)pc_get_rand_seed);
   // Returns resolution of the monitor's current display mode
   make_func_symbol_func("pc-get-active-display-size", (void*)pc_get_active_display_size);
   // Returns the current refresh rate of the currently selected monitor's display mode.

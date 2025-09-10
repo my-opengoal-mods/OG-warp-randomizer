@@ -8,6 +8,8 @@
 (require "engine/game/settings.gc")
 (define *no-warp?* #f)
 
+(defconstant SEED_NOT_SET_NUMBER 47389274)
+
 (define validation-checks #f)
 
 ;; DECOMP BEGINS
@@ -171,7 +173,7 @@
                "not-set"
                "not-set")))
 
-(define my-seed 69)
+(define rand-seed SEED_NOT_SET_NUMBER)
 
 (defun-extern knuth-rand-init int int)
 
@@ -182,10 +184,33 @@
 (defun have-we-set-up-the-warp-list? ()
   (dotimes (i LIST_LENGTH)
     (when (string= (-> *checkpoint-list2* i) "not-set")
-      (when (= my-seed 69)
-        (set! my-seed (knuth-rand-advance-seed))
-        (format 0 "WARP-RAND: SEED WAS 69 SETTING IT TO  ~D~%" my-seed))
-      (return #f)))
+      (when (= rand-seed SEED_NOT_SET_NUMBER)
+      (format 0 "WARP-RAND: SEED WAS ~D which is SEED NOT SET NUMBER FIGURING OUT WTF TO SET THE SEED TO ~%" SEED_NOT_SET_NUMBER)
+
+      ;; Lets first check to see if there is a set seed, if there is lets use it
+      (when (not (= (pc-get-set-seed) 0))
+          (set! *memory-card-seed* (pc-get-set-seed))
+          (format 0 "WARP-RAND: WE FOUND A pc-get-set-seed (set) USING IT ~D ~%" (pc-get-set-seed))
+          ;; auto save
+        )
+
+      ;; ok we had no set seeed I guess so lets check the memory card 
+      (when (not (= *memory-card-seed* 0))
+        (format 0 "WARP-RAND: WE FOUND A MEMORY CARD SEED USING IT ~D ~%" *memory-card-seed*)
+      )
+
+      ;; ok we have no set seed and no memory card seed, so lets use a random seed and then force a auto save so its backed up in memory card
+
+      (when (= *memory-card-seed* 0)
+      
+      (set! *memory-card-seed* (knuth-rand-advance-seed))
+      (format 0 "WARP-RAND: WE NOT FOUND A MEMORY CARD SEED NOT USING IT USING ~D INSTEAD~%" *memory-card-seed*)
+      ;; Auto save it into the memory card here
+      )
+      (return #f))
+    )
+      
+      )
   #t)
 
 (defun get-index-of-vanilla-point ((point-name string))
@@ -216,6 +241,11 @@
             (set! (-> shuffled orig-idx) tmp)))))))
 
 (defun set-values-in-checkpoint-list ((seed int))
+(set! seed *memory-card-seed*) ;; hack
+(if (= (pc-get-set-seed) 0) 
+    (format 0 "WARP-RAND Generating a checkpoint list with random seed ~D~%" seed)
+    (format 0 "WARP-RAND Generating a checkpoint list with set seed ~D~%" seed))
+
   (knuth-rand-init (the int64 seed))
   (let ((shuffled (the-as (array string) (new 'static 'boxed-array :type string :length LIST_LENGTH :allocated-length LIST_LENGTH))))
     ;; Step 1: copy original list
@@ -293,7 +323,7 @@
     (return (the time-frame #f)))
   (when (not (have-we-set-up-the-warp-list?))
     (format 0 "WARP-RAND: We still have poop in the checkpoint list, setting values~%")
-    (if (= (pc-get-rand-seed) 0) (set-values-in-checkpoint-list my-seed) (set-values-in-checkpoint-list (pc-get-rand-seed))))
+    (if (= (pc-get-set-seed) 0) (set-values-in-checkpoint-list rand-seed) (set-values-in-checkpoint-list (pc-get-set-seed))))
   ;;(format 0 "WARP-RAND: Getting ready to random warp, the vanilla point is ~A~%" point-name)
   (format 0 "WARP-RAND: ~A is mapped to ~A~%" point-name (-> *checkpoint-list2* (get-index-of-vanilla-point point-name)))
   (when (and (>= (- (current-time) *last-warp-time*) (seconds 2.5))
@@ -313,7 +343,8 @@
 
 (defun reset-warp-randomizer ()
   "sets the warp randomizer back to a clean slate"
-  (set! my-seed 69)
+  (set! rand-seed SEED_NOT_SET_NUMBER)
+  (set! *memory-card-seed* 0)
   (dotimes (i LIST_LENGTH)
     (set! (-> *checkpoint-list2* i) "not-set"))
   (have-we-set-up-the-warp-list?))

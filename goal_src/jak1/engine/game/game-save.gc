@@ -15,7 +15,7 @@
 ;;  - Additionally, the main loop calls mc-run to run the C++ memory card state machine.
 
 ;; Having two state machines, one in C++ and one in GOAL is kind of a questionable and confusing design.
-
+(define *memory-card-seed* 0)
 (define-extern mark-speedrun-started (function none))
 
 ;; DECOMP BEGINS
@@ -94,7 +94,8 @@
   (vibration 506)
   (play-hints 507)
   (video-mode 508)
-  (aspect-ratio 509))
+  (aspect-ratio 509)
+  (rand-seed 510))
 
 ;; DECOMP BEGINS
 
@@ -585,7 +586,24 @@
                                                                                                                     ((= a1-125 'aspect4x3) 1)
                                                                                                                     ((= a1-125 'aspect16x9) 2)
                                                                                                                     (else 0)))))
-                                                                                                        (set! (-> arg0 length) (&- (&+ v1-112 16) (the-as uint (the-as pointer (-> arg0 tag))))))))))))))))))))))))))))))))))))))))))))))))))))))))
+
+                                                                                                    (let ((v1-113 (&+ v1-112 16)))
+                                                                                                        (let ((a0-89 (the-as game-save-tag (&+ v1-113 0))))
+                                                                                                          (set! (-> (the-as game-save-tag a0-89) elt-type) (game-save-elt rand-seed))
+                                                                                                          (set! (-> (the-as game-save-tag a0-89) elt-count) 0)
+                                                                                                          (format 0 "WARP RAND: UPDATING THE SEED IN MEMORY CARD IT WAS ~D IS NOW  ~D~%" (-> a0-89 user-uint64) (the-as uint *memory-card-seed*))
+                                                                                                          (set! (-> a0-89 user-uint64) (the-as uint *memory-card-seed*))
+                                                                                                          ;; (let ((a1-125 (-> *setting-control* default aspect-ratio)))
+                                                                                                          ;;   (set! (-> (the-as (pointer int64) a0-89))
+                                                                                                          ;;         (cond
+                                                                                                          ;;           ((= a1-125 'aspect4x3) 1544097532)
+                                                                                                          ;;           ((= a1-125 'aspect16x9) 1544097566)
+                                                                                                          ;;           (else 0))))
+                                                                                                                    
+                                                                                                                    )
+
+
+                                                                                                        (set! (-> arg0 length) (&- (&+ v1-113 16) (the-as uint (the-as pointer (-> arg0 tag)))))))))))))))))))))))))))))))))))))))))))))))))))))))))
   (if (< (-> arg0 allocated-length) (-> arg0 length))
     (format 0 "ERROR: SAVEGAME: fatal error, save is using ~D of ~D bytes." (-> arg0 length) (-> arg0 allocated-length)))
   (none))
@@ -604,7 +622,10 @@
           ((= a0-1 (game-save-elt language))
            (set! (-> *setting-control* default language) (the-as language-enum (-> save-data user-uint64))))
           ;; ((= a0-1 (game-save-elt vibration)) (set! (-> *setting-control* default vibration) (= (-> save-data user-uint64) 1)))
-          ;; ((= a0-1 (game-save-elt play-hints)) (set! (-> *setting-control* default play-hints) (= (-> save-data user-uint64) 1)))
+           ((= a0-1 (game-save-elt rand-seed))
+           (format 0 "WARP RAND: LOADING SEED FROM MEM IT IS ~D~%" (-> save-data user-uint64))
+           (set! *memory-card-seed* (the-as int (-> save-data user-uint64) ));;(set! (-> *setting-control* default play-hints) (= (-> save-data user-uint64) 1))
+           )
           (else (format 0 "PC PORT: Skipping setting from game save, its stored in the pc-settings now~%"))))
       (set! save-data
             (the-as game-save-tag
@@ -617,7 +638,7 @@
   ;; if we're a new game, set our checkpoint.
   (when (nonzero? (-> save new-game))
     (set-continue! this "game-start")
-        
+
     (set! save save)
     (goto cfg-134))
   ;; loop over all tags
