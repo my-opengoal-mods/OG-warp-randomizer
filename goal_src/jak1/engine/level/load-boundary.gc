@@ -270,6 +270,7 @@
     (prevent-forbidden-pair shuffled "maincave-to-robocave" "robocave-bottom")
     (prevent-forbidden-pair shuffled "village3-farside" "lavatube-end")
     (prevent-forbidden-pair shuffled "village2-start" "firecanyon-end")
+    (prevent-forbidden-pair shuffled "village1-hut" "firecanyon-start")
     (prevent-forbidden-pair shuffled "village1-hut" "village1-warp")
     (prevent-forbidden-pair shuffled "village2-start" "village2-warp")
     (prevent-forbidden-pair shuffled "village3-start" "village3-warp")

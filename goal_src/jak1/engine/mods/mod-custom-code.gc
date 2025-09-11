@@ -24,12 +24,12 @@
 
 (defun runs-every-frame ()
   ;;(increase-power-cell-by-one) This is a call to increase-power-cell-by-one defined in mod-common-functions.gc
-  (when (and (= 0 0) (not *auto-load-happened?*))
-    (set! *auto-load-happened?* #t)
-    (process-spawn-function process
-      (lambda :behavior process ()
-        (suspend-for (seconds 2))
-        (auto-save-command 'restore 0 0 *active-pool*))))
+  ;; (when (and (not (string= (-> *game-info* current-continue name) "title-start")) (not *auto-load-happened?*))
+  ;;   (set! *auto-load-happened?* #t)
+  ;;   (process-spawn-function process
+  ;;     (lambda :behavior process ()
+  ;;       (suspend-for (seconds 2))
+  ;;       (auto-save-command 'restore 0 0 *active-pool*))))
   (when #t ;;(-> *randomizer-settings* use-random-seed?)
     ;; burn through a random number every frame for improved randomness
     (knuth-rand-advance-seed))
