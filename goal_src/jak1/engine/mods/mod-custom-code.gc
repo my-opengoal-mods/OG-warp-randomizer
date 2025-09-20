@@ -24,12 +24,6 @@
 
 (defun runs-every-frame ()
   ;;(increase-power-cell-by-one) This is a call to increase-power-cell-by-one defined in mod-common-functions.gc
-  ;; (when (and (not (string= (-> *game-info* current-continue name) "title-start")) (not *auto-load-happened?*))
-  ;;   (set! *auto-load-happened?* #t)
-  ;;   (process-spawn-function process
-  ;;     (lambda :behavior process ()
-  ;;       (suspend-for (seconds 2))
-  ;;       (auto-save-command 'restore 0 0 *active-pool*))))
   (when #t ;;(-> *randomizer-settings* use-random-seed?)
     ;; burn through a random number every frame for improved randomness
     (knuth-rand-advance-seed))
@@ -88,6 +82,17 @@
       ))
   (none))
 
+(defun run-auto-load-check ()
+(if (not (do-we-have-save-data?)) (set! *auto-load-happened?* #t) )
+(when (and #t (not *auto-load-happened?*))
+     (set-setting! 'bg-a 'abs 1.0 0)
+    (set! *auto-load-happened?* #t)
+    (process-spawn-function process
+      (lambda :behavior process ()
+        (suspend-for (seconds 2))
+        (auto-save-command 'restore 0 0 *active-pool*))))
+
+(none))
 (defun runs-on-jak-spawn ()
   ;; Code here runs every time jak spawns (loading a file new game or death)
   ;;uncomment this to use custom music for custom levels - the function is in mod-common-functions.gc
@@ -95,6 +100,7 @@
   ;; (if (have-we-set-up-the-warp-list? )
   ;;   (set-values-in-checkpoint-list)
   ;; )
+    (run-auto-load-check)
   (none))
 
 (defun runs-on-jak-death ((death-event symbol))

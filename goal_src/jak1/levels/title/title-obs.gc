@@ -329,20 +329,28 @@
           (go-virtual idle))
         (set! *camera-look-through-other* 2)
         (suspend))))
-
+(defun-extern run-auto-load-check none)
 (defstate ndi (logo)
   :virtual #t
   :event
     (behavior ((proc process) (argc int) (message symbol) (block event-message-block))
+            ;;         (set-setting! 'bg-a 'abs 1.0 0)
+            ;;  (run-auto-load-check)
+      
       (case message
-        (('blackout) (set-setting! 'bg-a 'abs 1.0 0))))
+        (('blackout) (set-setting! 'bg-a 'abs 1.0 0))
+        
+        )
+        )
   :enter
     (behavior ()
       (set-setting! 'bg-a 'abs 0.0 0)
       (apply-settings *setting-control*)
       (set-time! (-> self state-time))
       (if *time-of-day-proc* (set! (-> *time-of-day-proc* 0 hour) 12))
-      (set! (-> self done?) #f))
+      (set! (-> self done?) #f)
+
+      )
   :exit
     (behavior ()
       ((-> (method-of-type logo startup) exit))
@@ -350,6 +358,8 @@
   :trans
     (behavior ()
       ((-> (method-of-type logo startup) trans))
+    
+         (run-auto-load-check)
       ;; og:preserve-this
       (if (and (or *debug-segment* PC_PORT)
                (cpad-pressed? 0 start circle x)
@@ -626,7 +636,8 @@
         (apply-settings *setting-control*)
         (activate-progress *dproc* (progress-screen title))
         (set-setting! 'allow-progress #f 0.0 0)
-        (apply-settings *setting-control*))
+        (apply-settings *setting-control*)
+        )
       (when (and (< (mod (-> *display* real-frame-counter) 300) 270) (not *progress-process*))
         (let ((gp-0 (new 'stack 'font-context *font-default-matrix* 80 170 0.0 (font-color default) (font-flags shadow kerning))))
           (let ((v1-12 gp-0)) (set! (-> v1-12 width) (the float 352)))

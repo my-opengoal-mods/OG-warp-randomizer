@@ -78,3 +78,15 @@
       (draw-string-xy *temp-string* dma-buf 32 (+ (* 12 slot-idx) 8) (font-color red) (font-flags shadow))))
   0
   (none))
+(defun do-we-have-save-data? ()
+  "Return #t if slot 0, file 0 has save data, else #f."
+  (let ((info (new 'stack-no-clear 'mc-slot-info)))
+    ;; fetch info for slot 0
+    (mc-get-slot-info 0 info)
+    ;; check conditions
+    (and (not (zero? (-> info known)))
+         (not (zero? (-> info handle)))
+         (not (zero? (-> info formatted)))
+         (not (zero? (-> info inited)))
+         (not (zero? (-> info file 0 present))))))
+
